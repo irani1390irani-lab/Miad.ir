@@ -1,9 +1,1266 @@
-<!doctype html><html lang="fa" dir="rtl"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="theme-color" content="#173f32"><title>پایگاه اطلاع‌رسانی تیم مردمی میعاد</title><link rel="icon" href="/images/logo-placeholder.svg"><link rel="stylesheet" href="/css/style.css"><script src="/js/app.js" defer></script></head><body>
-<header class="site-header"><div class="container nav"><a class="brand" href="/"><img src="/images/logo-placeholder.svg" alt="نشان میعاد"><span>پایگاه اطلاع‌رسانی تیم مردمی میعاد</span></a><button class="menu-toggle" id="menuToggle" aria-expanded="false">منو ☰</button><nav class="nav-links" id="navLinks"><a href="#about">درباره ما</a><a href="#activities">فعالیت‌ها</a><a href="#announcements">اطلاعیه‌ها</a><a href="#contact">ارتباط</a><a class="btn" href="/application.html">ثبت درخواست همکاری</a></nav></div></header>
-<main><section class="hero"><div class="container hero-grid"><div><span class="eyebrow">پایگاه اطلاع‌رسانی</span><h1 id="heroTitle">تیم مردمی میعاد</h1><p class="lead" id="heroDescription">فضایی برای اطلاع‌رسانی، معرفی فعالیت‌ها و دریافت درخواست‌های همکاری.</p><div class="actions"><a class="btn" id="heroCta" href="/application.html">ثبت درخواست همکاری</a><a class="btn secondary" href="#announcements">مشاهده اطلاعیه‌ها</a></div></div><aside class="hero-card"><div class="hero-mark">م</div><h2>همراهی برای اثرگذاری</h2><p>اطلاع‌رسانی روشن، ارتباط مسئولانه و بررسی منظم درخواست‌های همکاری.</p></aside></div></section>
-<section class="section" id="about"><div class="container"><h2>درباره تیم مردمی میعاد</h2><div class="card"><p id="aboutText" class="muted">معرفی مجموعه از پنل مدیریت قابل ویرایش است.</p></div></div></section>
-<section class="section" id="activities"><div class="container"><h2>فعالیت‌ها و خدمات</h2><div class="cards" id="activityCards"></div></div></section>
-<section class="section" id="announcements"><div class="container"><h2>آخرین اطلاعیه‌ها</h2><div class="cards" id="announcementCards"><div class="card">در حال دریافت اطلاعیه‌ها…</div></div></div></section>
-<section class="band"><div class="container band-inner"><div><h2>مایل به همکاری هستید؟</h2><p class="muted">راهنمای ثبت درخواست را مطالعه و فرم را مرحله‌به‌مرحله تکمیل کنید.</p></div><a class="btn gold" href="/application.html">ثبت درخواست همکاری ←</a></div></section>
-<section class="section" id="contact"><div class="container contact-box"><div class="contact-info"><h2>ارتباط با مجموعه</h2><p id="contactText">راه‌های ارتباطی از پنل مدیریت قابل تنظیم است.</p><div id="contactLinks"></div></div><div class="contact-form"><h3>پیگیری درخواست</h3><p class="muted">کد پیگیری خود را وارد کنید.</p><form id="trackingForm"><div class="field"><label for="trackingCode">کد پیگیری</label><input id="trackingCode" required placeholder="MI-20261028-ABCDEF12"></div><button class="btn">بررسی وضعیت</button></form><div id="trackingResult" class="notice" hidden></div></div></div></section></main>
-<footer class="site-footer"><div class="container footer-row"><div><strong>پایگاه اطلاع‌رسانی تیم مردمی میعاد</strong><br><small>اطلاع‌رسانی شفاف و ارتباط مسئولانه</small></div><div><a href="/application.html">ثبت درخواست</a> · <a href="/login.html">ورود مدیران</a></div><small>© <span id="year"></span></small></div></footer></body></html>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>تیم مردمی میعاد | MIAD.IR</title>
+    <!-- Vazirmatn Font -->
+    <link href="https://cdn.jsdelivr.net/gh/rastikerdar/vazirmatn@v33.003/Vazirmatn-font-face.css" rel="stylesheet" type="text/css" />
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Chart.js for Admin Analytics -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        :root {
+            --bg-color: #f4f5f7;
+            --surface-color: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #6b7280;
+            --accent-gold: #c5a059;
+            --dark-sidebar: #222325;
+            --sidebar-card: #2e3033;
+            --border-color: #e5e7eb;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+            --danger: #ef4444;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --info: #3b82f6;
+        }
+
+        body.dark-mode {
+            --bg-color: #121212;
+            --surface-color: #1e1e1e;
+            --text-primary: #f3f4f6;
+            --text-secondary: #9ca3af;
+            --border-color: #333333;
+            --card-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Vazirmatn', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-primary);
+            max-width: 480px; /* شبیه‌ساز نمای موبایل */
+            margin: 0 auto;
+            min-height: 100vh;
+            position: relative;
+            padding-bottom: 70px;
+            transition: background-color 0.3s, color 0.3s;
+        }
+
+        /* هدر اصلی */
+        header {
+            background-color: var(--surface-color);
+            padding: 12px 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: sticky;
+            top: 0;
+            z-index: 90;
+            box-shadow: 0 1px 5px rgba(0,0,0,0.05);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .header-logo-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo-icon {
+            width: 42px;
+            height: 42px;
+            background-color: var(--accent-gold);
+            color: #fff;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.1rem;
+            color: var(--text-primary);
+            font-weight: 800;
+        }
+
+        .header-title span {
+            font-size: 0.75rem;
+            color: var(--accent-gold);
+            letter-spacing: 2px;
+            font-weight: 600;
+        }
+
+        .search-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid var(--border-color);
+            background: transparent;
+            color: var(--text-secondary);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* بنر و کارت‌ها */
+        .hero-banner {
+            margin: 15px;
+            border-radius: 16px;
+            overflow: hidden;
+            position: relative;
+            box-shadow: var(--card-shadow);
+            background: #2a3827;
+            color: #ffffff;
+        }
+
+        .hero-img {
+            width: 100%;
+            height: 260px;
+            object-fit: cover;
+            display: block;
+            opacity: 0.85;
+        }
+
+        .hero-overlay {
+            position: absolute;
+            bottom: 0; left: 0; right: 0;
+            padding: 20px;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            text-align: center;
+        }
+
+        .hero-overlay h2 { font-size: 1.3rem; font-weight: 800; margin-bottom: 4px; }
+        .hero-overlay p { font-size: 0.85rem; opacity: 0.9; margin-bottom: 12px; }
+        .hero-btn {
+            display: inline-block;
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            color: #fff; padding: 6px 16px; border-radius: 20px; font-size: 0.75rem; text-decoration: none;
+            cursor: pointer;
+        }
+
+        .sub-banner-card {
+            margin: 0 15px 15px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            color: white; padding: 15px; border-radius: 14px; text-align: center;
+            box-shadow: var(--card-shadow);
+        }
+        .sub-banner-card h3 { font-size: 0.95rem; font-weight: 700; margin-bottom: 4px; }
+
+        .section-header {
+            padding: 10px 15px;
+            display: flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .section-title { font-size: 1.1rem; color: var(--text-secondary); font-weight: bold; }
+        .divider { height: 1px; background-color: var(--border-color); flex-grow: 1; }
+
+        .message-list { padding: 0 15px; display: flex; flex-direction: column; gap: 12px; }
+        .message-card {
+            background: var(--surface-color); border-radius: 12px; padding: 16px;
+            display: flex; align-items: center; justify-content: space-between;
+            box-shadow: var(--card-shadow); border: 1px solid var(--border-color);
+        }
+        .message-title { font-size: 0.9rem; font-weight: 700; color: var(--text-primary); line-height: 1.5; }
+        .message-badge { background-color: var(--accent-gold); color: #fff; padding: 4px 10px; border-radius: 12px; font-size: 0.75rem; }
+
+        /* منوی کشویی سمت چپ */
+        .sidebar {
+            position: fixed;
+            top: 0; left: -100%;
+            width: 80%; max-width: 320px; height: 100%;
+            background-color: var(--dark-sidebar);
+            color: #ffffff;
+            z-index: 100; transition: 0.3s ease-in-out;
+            padding: 20px; box-shadow: 5px 0 25px rgba(0, 0, 0, 0.4);
+            overflow-y: auto;
+        }
+        .sidebar.active { left: 0; }
+
+        .sidebar-top-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 12px;
+            margin-bottom: 25px;
+        }
+
+        .sidebar-profile-box {
+            background-color: var(--sidebar-card);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            gap: 10px;
+        }
+
+        .user-avatar-custom {
+            width: 50px; height: 50px; border-radius: 50%;
+            background-color: #d1d5db;
+            display: flex; align-items: center; justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+        .user-avatar-custom::before {
+            content: '';
+            width: 20px; height: 20px; border-radius: 50%;
+            background-color: #71717a;
+            display: block;
+            margin-top: -10px;
+        }
+        .user-avatar-custom::after {
+            content: '';
+            position: absolute;
+            width: 34px; height: 17px;
+            border-radius: 17px 17px 0 0;
+            background-color: #71717a;
+            bottom: 0;
+        }
+
+        .login-text-btn {
+            color: var(--accent-gold);
+            font-size: 0.9rem;
+            font-weight: bold;
+        }
+
+        .sidebar-theme-box {
+            background-color: var(--sidebar-card);
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            border: none;
+            color: #fff;
+            font-size: 1.2rem;
+        }
+
+        .sidebar-menu { list-style: none; display: flex; flex-direction: column; gap: 12px; }
+        .sidebar-menu li a {
+            display: flex; align-items: center; justify-content: space-between;
+            padding: 16px 18px; background: var(--sidebar-card); color: #f3f4f6;
+            text-decoration: none; border-radius: 16px; font-size: 0.95rem; font-weight: 500; transition: 0.2s;
+        }
+        .sidebar-menu li a:hover { background: rgba(197, 160, 89, 0.2); color: var(--accent-gold); }
+        .sidebar-menu li a i { color: #9ca3af; font-size: 0.8rem; }
+
+        .overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(2px); z-index: 99; display: none;
+        }
+        .overlay.active { display: block; }
+
+        /* نوار پایین */
+        .bottom-nav {
+            position: fixed; bottom: 0; left: 0; right: 0; max-width: 480px; margin: 0 auto;
+            background-color: var(--surface-color); border-top: 1px solid var(--border-color);
+            display: flex; justify-content: space-around; align-items: center; padding: 10px 0; z-index: 90;
+        }
+        .nav-item {
+            display: flex; flex-direction: column; align-items: center; color: var(--text-secondary);
+            text-decoration: none; font-size: 0.75rem; gap: 4px; background: none; border: none; cursor: pointer; width: 20%;
+        }
+        .nav-item i { font-size: 1.25rem; }
+        .nav-item.active { color: var(--accent-gold); }
+
+        /* فرم‌ها و اینپوت‌ها */
+        .form-control {
+            width: 100%; padding: 12px 15px; margin-bottom: 12px;
+            background: var(--bg-color); border: 1px solid var(--border-color);
+            color: var(--text-primary); border-radius: 12px; font-size: 0.9rem; outline: none;
+        }
+
+        .required-star {
+            color: var(--accent-gold);
+            margin-left: 4px;
+        }
+
+        /* کادر انتخاب */
+        .fancy-select-wrapper {
+            position: relative;
+            margin-bottom: 12px;
+        }
+        .fancy-select {
+            width: 100%;
+            padding: 12px 15px;
+            background: var(--bg-color);
+            border: 2px solid var(--border-color);
+            color: var(--text-primary);
+            border-radius: 14px;
+            font-size: 0.95rem;
+            outline: none;
+            appearance: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-family: 'Vazirmatn', sans-serif;
+        }
+        .fancy-select:focus {
+            border-color: var(--accent-gold);
+            box-shadow: 0 0 10px rgba(197, 160, 89, 0.2);
+            background: var(--surface-color);
+        }
+        .fancy-select-wrapper::after {
+            content: '\f107';
+            font-family: 'Font Awesome 6 Free';
+            font-weight: 900;
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--accent-gold);
+            pointer-events: none;
+            font-size: 1rem;
+        }
+
+        /* صفحه ورود */
+        #login-page {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background-color: var(--bg-color); color: var(--text-primary);
+            z-index: 250; overflow-y: auto; padding: 30px 20px;
+            text-align: center;
+        }
+        .login-page-container {
+            max-width: 360px;
+            margin: 80px auto;
+            background: var(--surface-color);
+            padding: 30px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            border: 1px solid var(--border-color);
+        }
+        .login-page-container h2 {
+            color: var(--accent-gold);
+            margin-bottom: 25px;
+            font-size: 1.5rem;
+            font-weight: 800;
+        }
+        .page-login-btn {
+            background: var(--accent-gold); color: white; border: none;
+            padding: 12px; width: 100%; border-radius: 12px; font-weight: bold; cursor: pointer;
+            font-size: 1rem; margin-top: 5px;
+        }
+        .back-home-btn {
+            background: transparent; border: none; color: var(--text-secondary);
+            margin-top: 20px; cursor: pointer; font-size: 0.85rem; display: inline-block;
+        }
+
+        /* پنل مدیریت */
+        #admin-panel-page {
+            display: none;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: var(--bg-color); color: var(--text-primary);
+            z-index: 300; overflow-y: auto; padding-bottom: 30px;
+        }
+
+        .admin-nav-bar {
+            background: var(--surface-color);
+            padding: 12px 15px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky; top: 0; z-index: 10;
+        }
+
+        .admin-nav-title { font-weight: bold; font-size: 0.95rem; color: var(--accent-gold); display: flex; align-items: center; gap: 8px; }
+        .admin-action-icons { display: flex; gap: 10px; align-items: center; }
+        .icon-btn { background: var(--bg-color); border: 1px solid var(--border-color); border-radius: 8px; width: 34px; height: 34px; display: flex; align-items: center; justify-content: center; cursor: pointer; color: var(--text-primary); position: relative; }
+        .badge-count { position: absolute; top: -4px; right: -4px; background: var(--danger); color: white; font-size: 0.65rem; padding: 2px 5px; border-radius: 10px; }
+
+        .admin-tabs-scroll {
+            display: flex; gap: 8px; padding: 12px 15px; overflow-x: auto;
+            background: var(--surface-color); border-bottom: 1px solid var(--border-color);
+            white-space: nowrap; scrollbar-width: none;
+        }
+        .admin-tabs-scroll::-webkit-scrollbar { display: none; }
+        .tab-btn {
+            padding: 8px 14px; border-radius: 20px; border: 1px solid var(--border-color);
+            background: var(--bg-color); color: var(--text-secondary); font-size: 0.8rem; font-weight: 600; cursor: pointer;
+            display: flex; align-items: center; gap: 6px;
+        }
+        .tab-btn.active { background: var(--accent-gold); color: white; border-color: var(--accent-gold); }
+
+        .admin-container { padding: 15px; }
+
+        .stats-grid-full { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-bottom: 15px; }
+        .stat-card-item {
+            background: var(--surface-color); padding: 12px; border-radius: 14px;
+            border: 1px solid var(--border-color); box-shadow: var(--card-shadow);
+        }
+        .stat-card-item .val { font-size: 1.2rem; font-weight: bold; color: var(--accent-gold); margin-top: 4px; }
+        .stat-card-item .title { font-size: 0.72rem; color: var(--text-secondary); }
+
+        .admin-card-section {
+            background: var(--surface-color); border-radius: 14px; padding: 15px;
+            margin-bottom: 15px; border: 1px solid var(--border-color); box-shadow: var(--card-shadow);
+        }
+        .admin-card-section h4 { font-size: 0.9rem; margin-bottom: 12px; color: var(--text-primary); display: flex; justify-content: space-between; align-items: center; }
+
+        .data-table-full { width: 100%; border-collapse: collapse; font-size: 0.75rem; text-align: right; }
+        .data-table-full th, .data-table-full td { padding: 10px 6px; border-bottom: 1px solid var(--border-color); }
+        .data-table-full th { color: var(--text-secondary); background: var(--bg-color); }
+
+        .status-badge { padding: 3px 8px; border-radius: 10px; font-size: 0.68rem; font-weight: bold; }
+        .status-pending { background: #fef3c7; color: #92400e; }
+        .status-approved { background: #d1fae5; color: #065f46; }
+        .status-rejected { background: #fee2e2; color: #991b1b; }
+
+        .small-btn { padding: 5px 10px; border-radius: 6px; border: none; color: white; font-size: 0.7rem; cursor: pointer; font-weight: bold; display: inline-flex; align-items: center; gap: 4px; }
+        .btn-success { background: var(--success); }
+        .btn-danger { background: var(--danger); }
+        .btn-info { background: var(--info); }
+        .btn-warning { background: var(--warning); }
+
+        /* عمومی مدال‌ها */
+        .modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.7); display: none; justify-content: center; align-items: center; z-index: 400; padding: 15px;
+        }
+        .modal-body-content {
+            background: var(--surface-color); border-radius: 16px; padding: 20px;
+            width: 100%; max-width: 440px; max-height: 90vh; overflow-y: auto; font-size: 0.85rem;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- صفحه اصلی سایت -->
+    <div id="main-website">
+        <header>
+            <div class="header-logo-container">
+                <div class="logo-icon">م</div>
+                <div class="header-title">
+                    <h1>تیم مردمی میعاد</h1>
+                    <span>MIAD.IR</span>
+                </div>
+            </div>
+            <button class="search-btn" onclick="openSearchModal()" title="جستجو"><i class="fa-solid fa-magnifying-glass"></i></button>
+        </header>
+
+        <!-- ۱. بخش خانه -->
+        <div id="section-home" class="page-section">
+            <section class="hero-banner">
+                <img src="https://picsum.photos/500/300?random=1" alt="میعاد" class="hero-img">
+                <div class="hero-overlay">
+                    <h2>میعاد؛ هم‌افزایی برای خدمت</h2>
+                    <p>تا رسیدن به قلّه‌های پیشرفت و آبادانی هم‌عهدیم</p>
+                    <button onclick="switchPublicTab('about', null)" class="hero-btn">متن کامل توضیحات را اینجا بخوانید &larr;</button>
+                </div>
+            </section>
+
+            <div class="sub-banner-card">
+                <h3>خیزش گروه‌های جهادی برای خدمت به مناطق محروم</h3>
+                <p style="font-size: 0.75rem; opacity: 0.8; margin-top: 4px;">گزارش جامع از آخرین دستاوردهای میدان خدمت منتشر شد</p>
+            </div>
+
+            <div class="section-header">
+                <div class="divider"></div>
+                <span class="section-title">آخرین اطلاعیه‌ها</span>
+                <div class="divider"></div>
+            </div>
+
+            <div class="message-list" id="home-news-container"></div>
+        </div>
+
+        <!-- ۲. بخش اطلاعیه‌ها -->
+        <div id="section-announcements" class="page-section" style="display: none; padding: 15px;">
+            <div class="section-header" style="margin-bottom: 15px;">
+                <div class="divider"></div>
+                <span class="section-title"><i class="fa-solid fa-bell"></i> تمام اطلاعیه‌ها و اخبار</span>
+                <div class="divider"></div>
+            </div>
+            <div class="message-list" id="announcements-container"></div>
+        </div>
+
+        <!-- ۳. بخش درباره ما (متن اصلی شما بدون تغییر) -->
+        <div id="section-about" class="page-section" style="display: none; padding: 15px;">
+            <div class="admin-card-section" style="line-height: 1.9; text-align: justify;">
+                <div style="text-align: center; margin-bottom: 20px;">
+                    <span style="color: var(--accent-gold); font-size: 1.2rem; font-weight: bold; display: block; margin-bottom: 5px;">درباره ما | تیم مردمی میعاد 🇮🇷</span>
+                    <span style="font-size: 0.85rem; color: var(--text-secondary); font-weight: 600;">میعاد؛ عهدی برای ادامه مسیر</span>
+                </div>
+
+                <p style="text-align: center; font-style: italic; color: var(--accent-gold); margin-bottom: 15px; font-weight: bold;">بسم ربّ الشهداء و الصدیقین</p>
+
+                <p style="font-size: 0.85rem; margin-bottom: 15px;">
+                    تیم مردمی میعاد، مجموعه‌ای متشکل از فعالان رسانه‌ای و اعضایی است که با تکیه بر تعهد، همدلی و اراده‌ای مشترک، مسیر فعالیت خود را در عرصه رسانه و روایتگری ادامه می‌دهند.
+                </p>
+                
+                <p style="font-size: 0.85rem; margin-bottom: 20px;">
+                    میعاد، تنها یک نام نیست؛ یادآور عهدی است که با ایمان، مسئولیت‌پذیری و امید به آینده معنا می‌یابد؛ عهدی برای ادامه مسیر و تلاش در راه آرمان‌هایی که اعضای این خانواده رسانه‌ای به آن باور دارند.
+                </p>
+
+                <h4 style="color: var(--accent-gold); font-size: 0.95rem; margin-top: 20px; margin-bottom: 8px; border-right: 3px solid var(--accent-gold); padding-right: 8px;">هویت و رسالت ما</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 15px;">
+                    ما در تیم مردمی میعاد، فعالیت رسانه‌ای را مسئولیتی ارزشمند می‌دانیم؛ مسئولیتی که بر پایه آگاهی، دقت، تعهد و هم‌افزایی اعضا شکل می‌گیرد.
+                </p>
+                <p style="font-size: 0.85rem; margin-bottom: 15px;">
+                    تلاش ما بر این است که با بهره‌گیری از ظرفیت‌های رسانه‌ای و مشارکت فعالان این عرصه، در مسیر انتشار محتوا، بازتاب رویدادها و تقویت ارتباط میان اعضا و مخاطبان گام برداریم.
+                </p>
+                <p style="font-size: 0.85rem; margin-bottom: 20px;">
+                    پایبندی به اصول مجموعه، احترام به مخاطب، مسئولیت‌پذیری در انتشار مطالب و حرکت هماهنگ در چارچوب اهداف تعیین‌شده، از جمله اصول مورد توجه ماست.
+                </p>
+
+                <h4 style="color: var(--accent-gold); font-size: 0.95rem; margin-top: 20px; margin-bottom: 8px; border-right: 3px solid var(--accent-gold); padding-right: 8px;">خانواده‌ای با عهدی مشترک</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 15px;">
+                    میعاد، حاصل همراهی افرادی است که هر یک سهمی در پیشبرد اهداف مجموعه دارند. باور داریم که استمرار فعالیت، پیشرفت و دستیابی به اهداف مشترک، در سایه همدلی، نظم، تلاش مستمر و مسئولیت‌پذیری امکان‌پذیر است.
+                </p>
+                <p style="font-size: 0.85rem; margin-bottom: 20px;">
+                    از همین رو، حفظ انسجام مجموعه، ارتقای کیفیت فعالیت‌های رسانه‌ای و فراهم‌کردن زمینه همکاری مؤثر میان اعضا، از اولویت‌های ما به شمار می‌رود.
+                </p>
+
+                <h4 style="color: var(--accent-gold); font-size: 0.95rem; margin-top: 20px; margin-bottom: 8px; border-right: 3px solid var(--accent-gold); padding-right: 8px;">افق پیش رو</h4>
+                <p style="font-size: 0.85rem; margin-bottom: 10px;">
+                    ما مسیر پیش رو را با امید به لطف پروردگار، تکیه بر توان اعضا و وفاداری به عهد خود ادامه می‌دهیم.
+                </p>
+                <p style="font-size: 0.85rem;">
+                    با الهام از سیره اهل‌بیت عصمت و طهارت علیهم‌السلام و با توجه به آرمان‌های انقلاب اسلامی، می‌کوشیم در عرصه رسانه نیز حضوری مسئولانه، منسجم و اثرگذار داشته باشیم.
+                </p>
+            </div>
+        </div>
+
+        <!-- ۴. بخش ثبت درخواست همکاری -->
+        <div id="section-apply" class="page-section" style="display: none; padding: 15px;">
+            <div class="admin-card-section">
+                <h4 style="color: var(--accent-gold); font-size: 1.1rem; margin-bottom: 15px;">
+                    <i class="fa-solid fa-pen-to-square"></i> فرم ثبت درخواست همکاری
+                </h4>
+                <form onsubmit="submitForm(event)">
+                    <label style="font-size: 0.8rem; font-weight: bold;"><span class="required-star">*</span>نام و نام خانوادگی:</label>
+                    <input type="text" class="form-control" id="form-fullname" required placeholder="مثال: علی محمدی">
+
+                    <label style="font-size: 0.8rem; font-weight: bold;"><span class="required-star">*</span>نام کاربری شاد (فقط انگلیسی، اعداد و _):</label>
+                    <input type="text" class="form-control" id="form-shad" required placeholder="example_123" pattern="[A-Za-z0-9_]+" title="فقط حروف انگلیسی، اعداد و خط تیره پایین (_) مجاز هستند.">
+
+                    <label style="font-size: 0.8rem; font-weight: bold;"><span class="required-star">*</span>شماره تماس (تلفن همراه):</label>
+                    <input type="tel" class="form-control" id="form-phone" required placeholder="۰۹۱۲۰۰۰۰۰۰۰">
+
+                    <label style="font-size: 0.8rem; font-weight: bold;">سمت درخواستی:</label>
+                    <div class="fancy-select-wrapper">
+                        <select class="fancy-select" id="form-position">
+                            <option value="ادمین">ادمین</option>
+                            <option value="تولید محتوا و رسانه">تولید محتوا و رسانه</option>
+                            <option value="عکاسی و مستندسازی">عکاسی و مستندسازی</option>
+                            <option value="پشتیبانی و فنی">پشتیبانی و فنی</option>
+                            <option value="روابط عمومی">روابط عمومی</option>
+                        </select>
+                    </div>
+
+                    <label style="font-size: 0.8rem; font-weight: bold;">نام کانال یا گروه تحت مدیریت:</label>
+                    <input type="text" class="form-control" id="form-channel" placeholder="در صورت وجود وارد کنید">
+
+                    <label style="font-size: 0.8rem; font-weight: bold;"><span class="required-star">*</span>سابقه فعالیت:</label>
+                    <textarea class="form-control" id="form-exp" rows="3" required placeholder="شرح سوابق و فعالیت‌های قبلی..."></textarea>
+
+                    <label style="font-size: 0.8rem; font-weight: bold;">کد دعوت (اختیاری):</label>
+                    <input type="text" class="form-control" id="form-invite" placeholder="کد دعوت در صورت داشتن">
+
+                    <div style="margin: 10px 0; font-size: 0.8rem; display: flex; align-items: center; gap: 8px;">
+                        <input type="checkbox" id="accept-rules" required>
+                        <label for="accept-rules">قوانین و مقررات مجموعه میعاد را می‌پذیرم.</label>
+                    </div>
+
+                    <button type="submit" class="page-login-btn">
+                        <i class="fa-solid fa-paper-plane"></i> ارسال و ثبت نهایی درخواست
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- ۵. بخش پیام‌ها -->
+        <div id="section-messages" class="page-section" style="display: none; padding: 15px;">
+            <div class="section-header" style="margin-bottom: 15px;">
+                <div class="divider"></div>
+                <span class="section-title"><i class="fa-solid fa-comment-dots"></i> پیام‌ها</span>
+                <div class="divider"></div>
+            </div>
+            <div class="message-list" id="public-messages-container"></div>
+        </div>
+
+        <!-- ۶. بخش گالری تصاویر -->
+        <div id="section-gallery" class="page-section" style="display: none; padding: 15px;">
+            <div class="section-header" style="margin-bottom: 15px;">
+                <div class="divider"></div>
+                <span class="section-title"><i class="fa-solid fa-photo-film"></i> تصاویر و چندرسانه‌ای</span>
+                <div class="divider"></div>
+            </div>
+            <div id="gallery-container" style="display: flex; flex-direction: column; gap: 15px;"></div>
+        </div>
+
+        <!-- ۷. بخش ارتباط با ما -->
+        <div id="section-contact" class="page-section" style="display: none; padding: 15px;">
+            <div class="admin-card-section" style="text-align: center; line-height: 1.8;">
+                <div style="width: 60px; height: 60px; background: var(--accent-gold); color: white; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; margin: 0 auto 15px auto;">
+                    <i class="fa-solid fa-headset"></i>
+                </div>
+                <h3 style="color: var(--accent-gold); margin-bottom: 10px; font-size: 1.2rem;">ارتباط با تیم مردمی میعاد</h3>
+                <p style="font-size: 0.85rem; color: var(--text-secondary); margin-bottom: 20px;">
+                    شما عزیزان می‌توانید از طریق راه‌های زیر با ما در ارتباط باشید:
+                </p>
+                <div style="text-align: right; background: var(--bg-color); padding: 15px; border-radius: 12px; font-size: 0.85rem; display: flex; flex-direction: column; gap: 12px;">
+                    <div>
+                        <a href="https://shad.ir/ir_Miad" target="_blank" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-bullhorn" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+                            <b>کانال رسمی شاد:</b> <span style="color: var(--accent-gold); direction: ltr; display: inline-block;">Shad.ir/ir_Miad</span>
+                        </a>
+                    </div>
+                    <div>
+                        <a href="https://shad.ir/MiadLeader" target="_blank" style="color: var(--text-primary); text-decoration: none; display: flex; align-items: center; gap: 8px;">
+                            <i class="fa-solid fa-headset" style="color: var(--accent-gold); font-size: 1.1rem;"></i>
+                            <b>پشتیبانی شاد:</b> <span style="color: var(--accent-gold); direction: ltr; display: inline-block;">Shad.ir/MiadLeader</span>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- نوار پایین -->
+        <nav class="bottom-nav">
+            <button class="nav-item active" id="nav-home" onclick="switchPublicTab('home', this)">
+                <i class="fa-solid fa-house"></i><span>خانه</span>
+            </button>
+            <button class="nav-item" id="nav-announcements" onclick="switchPublicTab('announcements', this)">
+                <i class="fa-solid fa-bell"></i><span>اطلاعیه‌ها</span>
+            </button>
+            <button class="nav-item" id="nav-about" onclick="switchPublicTab('about', this)">
+                <i class="fa-solid fa-circle-info"></i><span>درباره ما</span>
+            </button>
+            <button class="nav-item" id="nav-messages" onclick="switchPublicTab('messages', this)">
+                <i class="fa-solid fa-comment-dots"></i><span>پیام‌ها</span>
+            </button>
+            <button class="nav-item" onclick="toggleSidebar()">
+                <i class="fa-solid fa-ellipsis"></i><span>منو</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- منوی کشویی سمت چپ -->
+    <div class="overlay" id="overlay" onclick="toggleSidebar()"></div>
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-top-grid">
+            <div class="sidebar-profile-box" onclick="openLoginPage()">
+                <div class="user-avatar-custom"></div>
+                <span class="login-text-btn">ورود مدیران</span>
+            </div>
+            <button class="sidebar-theme-box" onclick="toggleTheme()" id="themeBtn">
+                <i class="fa-solid fa-sun"></i>
+            </button>
+        </div>
+
+        <ul class="sidebar-menu">
+            <li><a href="#" onclick="switchPublicTab('home', null); toggleSidebar();"><span>صفحه اصلی</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+            <li><a href="#" onclick="switchPublicTab('announcements', null); toggleSidebar();"><span>اطلاعیه‌ها</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+            <li><a href="#" onclick="switchPublicTab('about', null); toggleSidebar();"><span>درباره ما</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+            <li><a href="#" onclick="switchPublicTab('apply', null); toggleSidebar();"><span>ثبت درخواست همکاری</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+            <li><a href="#" onclick="switchPublicTab('messages', null); toggleSidebar();"><span>پیام‌ها</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+            <li><a href="#" onclick="switchPublicTab('gallery', null); toggleSidebar();"><span>چندرسانه‌ای & گالری</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+            <li><a href="#" onclick="switchPublicTab('contact', null); toggleSidebar();"><span>ارتباط با ما</span> <i class="fa-solid fa-chevron-left"></i></a></li>
+        </ul>
+    </aside>
+
+    <!-- صفحه ورود -->
+    <div id="login-page">
+        <div class="login-page-container">
+            <h2>ورود مدیریت</h2>
+            <input type="text" id="adminUser" class="form-control" placeholder="نام کاربری" value="admin">
+            <input type="password" id="adminPass" class="form-control" placeholder="رمز عبور" value="admin">
+            <button class="page-login-btn" onclick="checkLogin()">ورود به پنل</button>
+            <button class="back-home-btn" onclick="closeLoginPage()">← بازگشت به صفحه اصلی</button>
+        </div>
+    </div>
+
+    <!-- پنل مدیریت کامل -->
+    <div id="admin-panel-page">
+        <div class="admin-nav-bar">
+            <div class="admin-nav-title">
+                <i class="fa-solid fa-shield-halved"></i> پنل مدیریت میعاد
+            </div>
+            <div class="admin-action-icons">
+                <div class="icon-btn" onclick="switchAdminTab('reqs', null)">
+                    <i class="fa-solid fa-bell"></i>
+                    <span class="badge-count" id="pending-count-badge">0</span>
+                </div>
+                <div class="icon-btn" onclick="logoutAdmin()" title="خروج">
+                    <i class="fa-solid fa-right-from-bracket" style="color: var(--danger);"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="admin-tabs-scroll">
+            <button class="tab-btn active" onclick="switchAdminTab('dash', this)"><i class="fa-solid fa-house"></i> داشبورد</button>
+            <button class="tab-btn" onclick="switchAdminTab('reqs', this)"><i class="fa-solid fa-file-pen"></i> درخواست‌ها</button>
+            <button class="tab-btn" onclick="switchAdminTab('members', this)"><i class="fa-solid fa-users"></i> همکاران</button>
+            <button class="tab-btn" onclick="switchAdminTab('news', this)"><i class="fa-solid fa-bullhorn"></i> اخبار و اطلاعیه‌ها</button>
+            <button class="tab-btn" onclick="switchAdminTab('msgs', this)"><i class="fa-solid fa-envelope"></i> پیام‌ها</button>
+            <button class="tab-btn" onclick="switchAdminTab('media', this)"><i class="fa-solid fa-photo-film"></i> تصاویر و رسانه</button>
+            <button class="tab-btn" onclick="switchAdminTab('reports', this)"><i class="fa-solid fa-chart-pie"></i> گزارش‌های آماری</button>
+            <button class="tab-btn" onclick="switchAdminTab('settings', this)"><i class="fa-solid fa-user-gear"></i> تنظیمات کاربری</button>
+        </div>
+
+        <div class="admin-container">
+
+            <!-- ۱. داشبورد -->
+            <div id="atab-dash" class="atab-content">
+                <div class="stats-grid-full">
+                    <div class="stat-card-item">
+                        <div class="title">کل درخواست‌ها</div>
+                        <div class="val" id="dash-total-reqs">0</div>
+                    </div>
+                    <div class="stat-card-item">
+                        <div class="title">در انتظار بررسی</div>
+                        <div class="val" style="color: var(--warning);" id="dash-pending-reqs">0</div>
+                    </div>
+                    <div class="stat-card-item">
+                        <div class="title">همکاران فعال</div>
+                        <div class="val" style="color: var(--success);" id="dash-active-members">0</div>
+                    </div>
+                    <div class="stat-card-item">
+                        <div class="title">درخواست‌های ردشده</div>
+                        <div class="val" style="color: var(--danger);" id="dash-rejected-reqs">0</div>
+                    </div>
+                </div>
+
+                <div class="admin-card-section">
+                    <h4>آخرین درخواست‌های ثبت‌شده</h4>
+                    <table class="data-table-full">
+                        <thead>
+                            <tr>
+                                <th>کد</th>
+                                <th>نام</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="dash-latest-reqs-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ۲. درخواست‌ها -->
+            <div id="atab-reqs" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>مدیریت درخواست‌های همکاری</h4>
+                    <input type="text" class="form-control" id="search-reqs-input" onkeyup="filterReqsTable()" placeholder="جستجو (نام، شاد، تلفن)...">
+                    <table class="data-table-full">
+                        <thead>
+                            <tr>
+                                <th>کد</th>
+                                <th>نام</th>
+                                <th>وضعیت</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="all-reqs-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ۳. همکاران -->
+            <div id="atab-members" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>فهرست همکاران تأییدشده تیم میعاد</h4>
+                    <table class="data-table-full">
+                        <thead>
+                            <tr>
+                                <th>نام همکار</th>
+                                <th>مسئولیت</th>
+                                <th>تاریخ</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="members-table-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ۴. اخبار و اطلاعیه‌ها -->
+            <div id="atab-news" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>
+                        مدیریت اخبار و اطلاعیه‌ها 
+                        <button class="small-btn btn-success" onclick="openAddNewsModal()"><i class="fa-solid fa-plus"></i> ثبت خبر جدید</button>
+                    </h4>
+                    <table class="data-table-full">
+                        <thead>
+                            <tr>
+                                <th>عنوان خبر</th>
+                                <th>تاریخ</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="news-admin-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ۵. پیام‌ها -->
+            <div id="atab-msgs" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>
+                        مدیریت پیام‌ها 
+                        <button class="small-btn btn-success" onclick="openAddMsgModal()"><i class="fa-solid fa-plus"></i> ثبت پیام جدید</button>
+                    </h4>
+                    <table class="data-table-full">
+                        <thead>
+                            <tr>
+                                <th>عنوان پیام</th>
+                                <th>تاریخ</th>
+                                <th>عملیات</th>
+                            </tr>
+                        </thead>
+                        <tbody id="msgs-admin-tbody"></tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- ۶. چندرسانه‌ای و عکس‌ها -->
+            <div id="atab-media" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>
+                        مدیریت تصاویر و چندرسانه‌ای
+                        <button class="small-btn btn-success" onclick="openAddMediaModal()"><i class="fa-solid fa-plus"></i> افزودن تصویر جدید</button>
+                    </h4>
+                    <div id="media-admin-list" style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; margin-top: 10px;"></div>
+                </div>
+            </div>
+
+            <!-- ۷. گزارش‌های آماری با نمودار -->
+            <div id="atab-reports" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>گزارش‌های آماری منسجم (نمودار)</h4>
+                    <div style="position: relative; height: 220px; width: 100%; margin-bottom: 20px;">
+                        <canvas id="reqsChart"></canvas>
+                    </div>
+                    <div style="position: relative; height: 200px; width: 100%;">
+                        <canvas id="membersBarChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- ۸. تنظیمات کاربری -->
+            <div id="atab-settings" class="atab-content" style="display:none;">
+                <div class="admin-card-section">
+                    <h4>تنظیمات کاربری مدیر</h4>
+                    <form onsubmit="saveUserSettings(event)">
+                        <label style="font-size: 0.8rem; font-weight: bold;">نام:</label>
+                        <input type="text" class="form-control" id="user-fname" value="محمد مهدی" required>
+
+                        <label style="font-size: 0.8rem; font-weight: bold;">نام خانوادگی:</label>
+                        <input type="text" class="form-control" id="user-lname" value="ابدی" required>
+
+                        <label style="font-size: 0.8rem; font-weight: bold;">نام کاربری جدید:</label>
+                        <input type="text" class="form-control" id="user-uname" value="admin" required>
+
+                        <label style="font-size: 0.8rem; font-weight: bold;">رمز عبور جدید:</label>
+                        <input type="password" class="form-control" id="user-pass" value="admin" required>
+
+                        <button type="submit" class="page-login-btn"><i class="fa-solid fa-user-check"></i> ذخیره اطلاعات کاربری</button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- مودال‌ها -->
+    <div class="modal-overlay" id="search-modal">
+        <div class="modal-body-content">
+            <h3 style="color:var(--accent-gold); margin-bottom:12px;"><i class="fa-solid fa-magnifying-glass"></i> جستجو در سایت</h3>
+            <input type="text" class="form-control" id="global-search-input" onkeyup="performGlobalSearch()" placeholder="کلمه مورد نظر را تایپ کنید...">
+            <div id="search-results-box" style="margin-top: 15px; display: flex; flex-direction: column; gap: 8px; max-height: 250px; overflow-y: auto;">
+                <p style="font-size: 0.8rem; color: var(--text-secondary);">عبارتی را برای جستجو وارد کنید...</p>
+            </div>
+            <button class="back-home-btn" onclick="closeModal('search-modal')">بستن</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="add-news-modal">
+        <div class="modal-body-content">
+            <h3 style="color:var(--accent-gold); margin-bottom:12px;"><i class="fa-solid fa-plus"></i> ثبت خبر / اطلاعیه جدید</h3>
+            <label style="font-size: 0.8rem; font-weight: bold;">عنوان خبر:</label>
+            <input type="text" class="form-control" id="news-title-input" placeholder="عنوان خبر...">
+            <label style="font-size: 0.8rem; font-weight: bold;">خلاصه/متن کامل:</label>
+            <textarea class="form-control" id="news-text-input" rows="4" placeholder="شرح اطلاعیه..."></textarea>
+            <button class="page-login-btn" onclick="saveNewNews()"><i class="fa-solid fa-paper-plane"></i> انتشار خبر</button>
+            <button class="back-home-btn" onclick="closeModal('add-news-modal')">انصراف</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="add-msg-modal">
+        <div class="modal-body-content">
+            <h3 style="color:var(--accent-gold); margin-bottom:12px;"><i class="fa-solid fa-comment-medical"></i> ثبت پیام جدید</h3>
+            <label style="font-size: 0.8rem; font-weight: bold;">عنوان پیام:</label>
+            <input type="text" class="form-control" id="msg-title-input" placeholder="عنوان پیام...">
+            <button class="page-login-btn" onclick="saveNewMessage()"><i class="fa-solid fa-paper-plane"></i> ثبت پیام</button>
+            <button class="back-home-btn" onclick="closeModal('add-msg-modal')">انصراف</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="add-media-modal">
+        <div class="modal-body-content">
+            <h3 style="color:var(--accent-gold); margin-bottom:12px;"><i class="fa-solid fa-image"></i> افزودن تصویر به گالری</h3>
+            <label style="font-size: 0.8rem; font-weight: bold;">عنوان تصویر:</label>
+            <input type="text" class="form-control" id="media-title-input" placeholder="عنوان عکس...">
+            <label style="font-size: 0.8rem; font-weight: bold;">توضیحات عکس:</label>
+            <textarea class="form-control" id="media-desc-input" rows="2" placeholder="توضیحات..."></textarea>
+            <label style="font-size: 0.8rem; font-weight: bold;">لینک تصویر (URL):</label>
+            <input type="text" class="form-control" id="media-url-input" placeholder="https://picsum.photos/500/300">
+            <button class="page-login-btn" onclick="saveNewMedia()"><i class="fa-solid fa-upload"></i> بارگذاری</button>
+            <button class="back-home-btn" onclick="closeModal('add-media-modal')">انصراف</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="request-details-modal">
+        <div class="modal-body-content">
+            <h3 style="color:var(--accent-gold); margin-bottom:10px;">جزییات کامل درخواست</h3>
+            <div id="req-modal-body" style="line-height:1.8;"></div>
+            <div style="margin-top:15px; border-top:1px solid var(--border-color); padding-top:10px;" id="req-modal-actions"></div>
+            <button class="back-home-btn" onclick="closeModal('request-details-modal')">بستن پنجره</button>
+        </div>
+    </div>
+
+    <script>
+        let siteData = {
+            adminUser: 'admin',
+            adminPass: 'admin',
+            adminName: 'محمد مهدی ابدی',
+            inviteCode: 'MIEAD-1405',
+            requests: [
+                { code: 'MC-1024', name: 'علی محمدی', shad: 'ali_m', phone: '۰۹۱۲۳۴۵۶۷۸۹', pos: 'ادمین', channel: 'کانال میعاد', exp: '۲ سال سابقه رسانه', status: 'pending' },
+                { code: 'MC-1025', name: 'زهرا رضایی', shad: 'z_rezaei', phone: '۰۹۳۵۰۰۰۰۰۰۰', pos: 'تولید محتوا و رسانه', channel: 'رسانه آنلاین', exp: '۳ سال نویسندگی', status: 'approved' }
+            ],
+            members: [
+                { id: 1, name: 'زهرا رضایی', pos: 'تولید محتوا و رسانه', date: '۱۴۰۵/۰۷/۱۵' },
+                { id: 2, name: 'رضا اکبری', pos: 'پشتیبانی و فنی', date: '۱۴۰۵/۰۷/۱۸' }
+            ],
+            news: [
+                { id: 1, title: 'خیزش گروه‌های جهادی برای خدمت به مناطق محروم', text: 'جزئیات کامل برنامه‌ریزی حضور گروه‌های جهادی اعلام شد...', date: '۱۴۰۵/۰۸/۰۶' },
+                { id: 2, title: 'پاسخ مسئول تیم میعاد به نامه‌های جمعی از فعالان فرهنگی', text: 'متن پاسخ و تقدیر از فعالین رسانه‌ای منتشر گردید.', date: '۱۴۰۵/۰۸/۰۴' }
+            ],
+            messages: [
+                { id: 1, title: 'پیام تقدیر از نخبه‌ها و مدال‌آوران تیم‌های مردمی', date: '۱۴۰۵/۰۸/۰۴' }
+            ],
+            media: [
+                { id: 1, title: 'اردوی جهادی خدمت‌رسانی', desc: 'حضور فعالین تیم میعاد در منطقه', url: 'https://picsum.photos/500/300?random=10' }
+            ]
+        };
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderPublicNews();
+            renderPublicMessages();
+            renderPublicGallery();
+        });
+
+        function toggleTheme() {
+            document.body.classList.toggle('dark-mode');
+            const btn = document.getElementById('themeBtn');
+            btn.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
+        }
+
+        function toggleSidebar() {
+            document.getElementById('sidebar').classList.toggle('active');
+            document.getElementById('overlay').classList.toggle('active');
+        }
+
+        function switchPublicTab(tabName, btnEl) {
+            document.querySelectorAll('.page-section').forEach(el => el.style.display = 'none');
+            document.getElementById('section-' + tabName).style.display = 'block';
+
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
+            if(btnEl) {
+                btnEl.classList.add('active');
+            } else {
+                const navMap = { home: 'nav-home', announcements: 'nav-announcements', about: 'nav-about', messages: 'nav-messages' };
+                if(navMap[tabName]) document.getElementById(navMap[tabName]).classList.add('active');
+            }
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        function renderPublicNews() {
+            const homeBox = document.getElementById('home-news-container');
+            const annBox = document.getElementById('announcements-container');
+            homeBox.innerHTML = '';
+            annBox.innerHTML = '';
+
+            siteData.news.forEach(item => {
+                homeBox.innerHTML += `
+                    <div class="message-card">
+                        <div class="message-title">${item.title}</div>
+                        <div class="message-badge">${item.date}</div>
+                    </div>
+                `;
+                annBox.innerHTML += `
+                    <div class="message-card" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                        <div style="display: flex; justify-content: space-between; width: 100%;">
+                            <span class="message-badge">${item.date}</span>
+                            <span style="font-size: 0.7rem; color: var(--accent-gold); font-weight: bold;">اطلاعیه رسمی</span>
+                        </div>
+                        <div class="message-title" style="font-size: 0.95rem;">${item.title}</div>
+                        <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;">${item.text}</p>
+                    </div>
+                `;
+            });
+        }
+
+        function renderPublicMessages() {
+            const box = document.getElementById('public-messages-container');
+            box.innerHTML = '';
+            siteData.messages.forEach(m => {
+                box.innerHTML += `
+                    <div class="message-card">
+                        <div class="message-title">${m.title}</div>
+                        <div class="message-badge">${m.date}</div>
+                    </div>
+                `;
+            });
+        }
+
+        function renderPublicGallery() {
+            const box = document.getElementById('gallery-container');
+            box.innerHTML = '';
+            siteData.media.forEach(img => {
+                box.innerHTML += `
+                    <div style="background: var(--surface-color); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--card-shadow);">
+                        <img src="${img.url}" style="width: 100%; height: 180px; object-fit: cover;">
+                        <div style="padding: 12px;">
+                            <h4 style="font-size: 0.9rem; color: var(--accent-gold);">${img.title}</h4>
+                            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">${img.desc}</p>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // استعلام واقعی کد دعوت هنگام ثبت نام
+        function submitForm(event) {
+            event.preventDefault();
+            const inviteInput = document.getElementById('form-invite').value.trim();
+
+            if (inviteInput !== '') {
+                if (inviteInput !== siteData.inviteCode) {
+                    alert('خطا: کد دعوت وارد شده نامعتبر یا اشتباه است!');
+                    return;
+                }
+            }
+
+            const newCode = 'MC-' + Math.floor(1000 + Math.random() * 9000);
+            const newReq = {
+                code: newCode,
+                name: document.getElementById('form-fullname').value,
+                shad: document.getElementById('form-shad').value,
+                phone: document.getElementById('form-phone').value,
+                pos: document.getElementById('form-position').value,
+                channel: document.getElementById('form-channel').value || 'ندارد',
+                exp: document.getElementById('form-exp').value,
+                status: 'pending'
+            };
+
+            siteData.requests.unshift(newReq);
+            alert('درخواست شما با موفقیت ثبت شد!\nکد پیگیری شما: ' + newCode);
+            document.querySelector('#section-apply form').reset();
+            switchPublicTab('home', null);
+            updateAdminDashboard();
+        }
+
+        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
+        function openSearchModal() { document.getElementById('search-modal').style.display = 'flex'; }
+
+        function performGlobalSearch() {
+            const query = document.getElementById('global-search-input').value.toLowerCase().trim();
+            const resultsBox = document.getElementById('search-results-box');
+            resultsBox.innerHTML = '';
+            if(!query) { resultsBox.innerHTML = '<p style="font-size:0.8rem; color:var(--text-secondary);">عبارتی را وارد کنید...</p>'; return; }
+
+            let found = 0;
+            siteData.news.forEach(n => {
+                if(n.title.toLowerCase().includes(query)) {
+                    found++;
+                    resultsBox.innerHTML += `<div style="background:var(--bg-color); padding:8px; border-radius:8px; font-size:0.8rem; cursor:pointer;" onclick="closeModal('search-modal'); switchPublicTab('announcements', null);"><b>[خبر]</b> ${n.title}</div>`;
+                }
+            });
+            if(found === 0) resultsBox.innerHTML = '<p style="font-size:0.8rem; color:var(--danger);">موردی یافت نشد!</p>';
+        }
+
+        function openLoginPage() { toggleSidebar(); document.getElementById('login-page').style.display = 'block'; }
+        function closeLoginPage() { document.getElementById('login-page').style.display = 'none'; }
+
+        function checkLogin() {
+            if (document.getElementById('adminUser').value === siteData.adminUser && document.getElementById('adminPass').value === siteData.adminPass) {
+                closeLoginPage();
+                document.getElementById('admin-panel-page').style.display = 'block';
+                updateAdminDashboard();
+            } else {
+                alert('نام کاربری یا رمز عبور اشتباه است!');
+            }
+        }
+        function logoutAdmin() { document.getElementById('admin-panel-page').style.display = 'none'; }
+
+        function switchAdminTab(tabKey, btnEl) {
+            document.querySelectorAll('.atab-content').forEach(el => el.style.display = 'none');
+            document.getElementById('atab-' + tabKey).style.display = 'block';
+            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
+            if(btnEl) btnEl.classList.add('active');
+
+            if(tabKey === 'reports') renderCharts();
+            if(tabKey === 'reqs') renderReqsTable();
+            if(tabKey === 'members') renderMembersTable();
+            if(tabKey === 'news') renderNewsAdminTable();
+            if(tabKey === 'msgs') renderMsgsAdminTable();
+            if(tabKey === 'media') renderMediaAdminList();
+        }
+
+        function updateAdminDashboard() {
+            const pending = siteData.requests.filter(r => r.status === 'pending').length;
+            document.getElementById('pending-count-badge').innerText = pending;
+            document.getElementById('dash-total-reqs').innerText = siteData.requests.length;
+            document.getElementById('dash-pending-reqs').innerText = pending;
+            document.getElementById('dash-active-members').innerText = siteData.members.length;
+            document.getElementById('dash-rejected-reqs').innerText = siteData.requests.filter(r => r.status === 'rejected').length;
+
+            const dashTbody = document.getElementById('dash-latest-reqs-tbody');
+            dashTbody.innerHTML = '';
+            siteData.requests.slice(0, 5).forEach(req => {
+                const badgeClass = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
+                const badgeText = req.status === 'pending' ? 'در انتظار' : (req.status === 'approved' ? 'تأییدشده' : 'ردشده');
+                dashTbody.innerHTML += `<tr><td>${req.code}</td><td>${req.name}</td><td><span class="status-badge ${badgeClass}">${badgeText}</span></td><td><button class="small-btn btn-info" onclick="viewReqDetails('${req.code}')"><i class="fa-solid fa-eye"></i></button></td></tr>`;
+            });
+        }
+
+        function renderReqsTable() {
+            const tbody = document.getElementById('all-reqs-tbody');
+            tbody.innerHTML = '';
+            siteData.requests.forEach(req => {
+                const badgeClass = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
+                const badgeText = req.status === 'pending' ? 'در انتظار' : (req.status === 'approved' ? 'تأییدشده' : 'ردشده');
+                tbody.innerHTML += `<tr><td>${req.code}</td><td>${req.name}</td><td><span class="status-badge ${badgeClass}">${badgeText}</span></td><td><button class="small-btn btn-info" onclick="viewReqDetails('${req.code}')"><i class="fa-solid fa-eye"></i> مشاهده</button></td></tr>`;
+            });
+        }
+
+        function filterReqsTable() {
+            const q = document.getElementById('search-reqs-input').value.toLowerCase();
+            document.querySelectorAll('#all-reqs-tbody tr').forEach(r => r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none');
+        }
+
+        function viewReqDetails(code) {
+            const req = siteData.requests.find(r => r.code === code);
+            if(!req) return;
+            document.getElementById('req-modal-body').innerHTML = `<b>کد:</b> ${req.code}<br><b>نام:</b> ${req.name}<br><b>شاد:</b> ${req.shad}<br><b>تلفن:</b> ${req.phone}<br><b>سمت:</b> ${req.pos}<br><b>سابقه:</b> ${req.exp}`;
+            document.getElementById('req-modal-actions').innerHTML = `<div style="display:flex; gap:8px;"><button class="small-btn btn-success" onclick="changeReqStatus('${req.code}', 'approved')"><i class="fa-solid fa-check"></i> تأیید</button><button class="small-btn btn-danger" onclick="changeReqStatus('${req.code}', 'rejected')"><i class="fa-solid fa-xmark"></i> رد</button></div>`;
+            document.getElementById('request-details-modal').style.display = 'flex';
+        }
+
+        function changeReqStatus(code, newStatus) {
+            const req = siteData.requests.find(r => r.code === code);
+            if(!req) return;
+            req.status = newStatus;
+            if(newStatus === 'approved' && !siteData.members.some(m => m.name === req.name)) {
+                siteData.members.push({ id: Date.now(), name: req.name, pos: req.pos, date: '۱۴۰۵/۰۸/۰۸' });
+            }
+            alert('وضعیت به روز شد.');
+            closeModal('request-details-modal');
+            updateAdminDashboard();
+            renderReqsTable();
+        }
+
+        function renderMembersTable() {
+            const tbody = document.getElementById('members-table-tbody');
+            tbody.innerHTML = '';
+            siteData.members.forEach(m => {
+                tbody.innerHTML += `<tr><td>${m.name}</td><td>${m.pos}</td><td>${m.date}</td><td><button class="small-btn btn-warning" onclick="resignMember(${m.id})">استعفا</button> <button class="small-btn btn-danger" onclick="deleteMember(${m.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`;
+            });
+        }
+        function resignMember(id) { siteData.members = siteData.members.filter(m => m.id !== id); renderMembersTable(); updateAdminDashboard(); alert('استعفا ثبت شد.'); }
+        function deleteMember(id) { siteData.members = siteData.members.filter(m => m.id !== id); renderMembersTable(); updateAdminDashboard(); }
+
+        function openAddNewsModal() { document.getElementById('add-news-modal').style.display = 'flex'; }
+        function saveNewNews() {
+            const title = document.getElementById('news-title-input').value.trim();
+            const text = document.getElementById('news-text-input').value.trim();
+            if(!title || !text) return;
+            siteData.news.unshift({ id: Date.now(), title, text, date: '۱۴۰۵/۰۸/۰۸' });
+            closeModal('add-news-modal'); renderPublicNews(); renderNewsAdminTable();
+        }
+        function renderNewsAdminTable() {
+            const tbody = document.getElementById('news-admin-tbody');
+            tbody.innerHTML = '';
+            siteData.news.forEach(n => tbody.innerHTML += `<tr><td>${n.title}</td><td>${n.date}</td><td><button class="small-btn btn-danger" onclick="deleteNews(${n.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`);
+        }
+        function deleteNews(id) { siteData.news = siteData.news.filter(n => n.id !== id); renderPublicNews(); renderNewsAdminTable(); }
+
+        function openAddMsgModal() { document.getElementById('add-msg-modal').style.display = 'flex'; }
+        function saveNewMessage() {
+            const title = document.getElementById('msg-title-input').value.trim();
+            if(!title) return;
+            siteData.messages.unshift({ id: Date.now(), title, date: '۱۴۰۵/۰۸/۰۸' });
+            closeModal('add-msg-modal'); renderPublicMessages(); renderMsgsAdminTable();
+        }
+        function renderMsgsAdminTable() {
+            const tbody = document.getElementById('msgs-admin-tbody');
+            tbody.innerHTML = '';
+            siteData.messages.forEach(m => tbody.innerHTML += `<tr><td>${m.title}</td><td>${m.date}</td><td><button class="small-btn btn-danger" onclick="deleteMsg(${m.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`);
+        }
+        function deleteMsg(id) { siteData.messages = siteData.messages.filter(m => m.id !== id); renderPublicMessages(); renderMsgsAdminTable(); }
+
+        function openAddMediaModal() { document.getElementById('add-media-modal').style.display = 'flex'; }
+        function saveNewMedia() {
+            const title = document.getElementById('media-title-input').value.trim();
+            const desc = document.getElementById('media-desc-input').value.trim();
+            const url = document.getElementById('media-url-input').value.trim() || 'https://picsum.photos/500/300?random=' + Math.random();
+            if(!title) return;
+            siteData.media.unshift({ id: Date.now(), title, desc, url });
+            closeModal('add-media-modal'); renderPublicGallery(); renderMediaAdminList();
+        }
+        function renderMediaAdminList() {
+            const box = document.getElementById('media-admin-list');
+            box.innerHTML = '';
+            siteData.media.forEach(m => box.innerHTML += `<div style="background:var(--bg-color); padding:8px; border-radius:10px;"><img src="${m.url}" style="width:100%; height:80px; object-fit:cover; border-radius:6px;"><b>${m.title}</b><button class="small-btn btn-danger" style="margin-top:5px; width:100%;" onclick="deleteMedia(${m.id})">حذف</button></div>`);
+        }
+        function deleteMedia(id) { siteData.media = siteData.media.filter(m => m.id !== id); renderPublicGallery(); renderMediaAdminList(); }
+
+        function saveUserSettings(e) {
+            e.preventDefault();
+            siteData.adminName = document.getElementById('user-fname').value + ' ' + document.getElementById('user-lname').value;
+            siteData.adminUser = document.getElementById('user-uname').value;
+            siteData.adminPass = document.getElementById('user-pass').value;
+            alert('اطلاعات کاربری بروزرسانی شد!');
+        }
+
+        let chart1 = null, chart2 = null;
+        function renderCharts() {
+            const pending = siteData.requests.filter(r => r.status === 'pending').length;
+            const approved = siteData.requests.filter(r => r.status === 'approved').length;
+            const rejected = siteData.requests.filter(r => r.status === 'rejected').length;
+
+            if(chart1) chart1.destroy();
+            chart1 = new Chart(document.getElementById('reqsChart').getContext('2d'), {
+                type: 'doughnut',
+                data: { labels: ['در انتظار', 'تأییدشده', 'ردشده'], datasets: [{ data: [pending, approved, rejected], backgroundColor: ['#f59e0b', '#10b981', '#ef4444'] }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+
+            if(chart2) chart2.destroy();
+            chart2 = new Chart(document.getElementById('membersBarChart').getContext('2d'), {
+                type: 'bar',
+                data: { labels: ['کل درخواست‌ها', 'همکاران فعال'], datasets: [{ label: 'آمار', data: [siteData.requests.length, siteData.members.length], backgroundColor: ['#3b82f6', '#c5a059'] }] },
+                options: { responsive: true, maintainAspectRatio: false }
+            });
+        }
+    </script>
+</body>
+</html>
