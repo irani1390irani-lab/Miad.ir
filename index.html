@@ -10,6 +10,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Chart.js for Admin Analytics -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     
     <style>
         :root {
@@ -678,8 +679,8 @@
     <div id="login-page">
         <div class="login-page-container">
             <h2>ورود مدیریت</h2>
-            <input type="text" id="adminUser" class="form-control" placeholder="نام کاربری" value="admin">
-            <input type="password" id="adminPass" class="form-control" placeholder="رمز عبور" value="admin">
+            <input type="email" id="adminUser" class="form-control" placeholder="ایمیل مدیر" autocomplete="username" required>
+            <input type="password" id="adminPass" class="form-control" placeholder="رمز عبور" autocomplete="current-password" required>
             <button class="page-login-btn" onclick="checkLogin()">ورود به پنل</button>
             <button class="back-home-btn" onclick="closeLoginPage()">← بازگشت به صفحه اصلی</button>
         </div>
@@ -864,11 +865,11 @@
                         <label style="font-size: 0.8rem; font-weight: bold;">نام خانوادگی:</label>
                         <input type="text" class="form-control" id="user-lname" value="ابدی" required>
 
-                        <label style="font-size: 0.8rem; font-weight: bold;">نام کاربری جدید:</label>
-                        <input type="text" class="form-control" id="user-uname" value="admin" required>
+                        <label style="font-size: 0.8rem; font-weight: bold;">ایمیل حساب مدیر (در صورت تغییر):</label>
+                        <input type="email" class="form-control" id="user-uname" placeholder="ایمیل جدید؛ اختیاری">
 
-                        <label style="font-size: 0.8rem; font-weight: bold;">رمز عبور جدید:</label>
-                        <input type="password" class="form-control" id="user-pass" value="admin" required>
+                        <label style="font-size: 0.8rem; font-weight: bold;">رمز عبور جدید (در صورت تغییر):</label>
+                        <input type="password" class="form-control" id="user-pass" placeholder="رمز جدید؛ اختیاری" minlength="8" autocomplete="new-password">
 
                         <button type="submit" class="page-login-btn"><i class="fa-solid fa-user-check"></i> ذخیره اطلاعات کاربری</button>
                     </form>
@@ -920,7 +921,9 @@
             <label style="font-size: 0.8rem; font-weight: bold;">توضیحات عکس:</label>
             <textarea class="form-control" id="media-desc-input" rows="2" placeholder="توضیحات..."></textarea>
             <label style="font-size: 0.8rem; font-weight: bold;">لینک تصویر (URL):</label>
-            <input type="text" class="form-control" id="media-url-input" placeholder="https://picsum.photos/500/300">
+            <input type="text" class="form-control" id="media-url-input" placeholder="لینک مستقیم تصویر (اختیاری)">
+            <label style="font-size: 0.8rem; font-weight: bold; display:block; margin-top:8px;">یا انتخاب تصویر از دستگاه:</label>
+            <input type="file" class="form-control" id="media-file-input" accept="image/*">
             <button class="page-login-btn" onclick="saveNewMedia()"><i class="fa-solid fa-upload"></i> بارگذاری</button>
             <button class="back-home-btn" onclick="closeModal('add-media-modal')">انصراف</button>
         </div>
@@ -936,331 +939,99 @@
     </div>
 
     <script>
-        let siteData = {
-            adminUser: 'admin',
-            adminPass: 'admin',
-            adminName: 'محمد مهدی ابدی',
-            inviteCode: 'MIEAD-1405',
-            requests: [
-                { code: 'MC-1024', name: 'علی محمدی', shad: 'ali_m', phone: '۰۹۱۲۳۴۵۶۷۸۹', pos: 'ادمین', channel: 'کانال میعاد', exp: '۲ سال سابقه رسانه', status: 'pending' },
-                { code: 'MC-1025', name: 'زهرا رضایی', shad: 'z_rezaei', phone: '۰۹۳۵۰۰۰۰۰۰۰', pos: 'تولید محتوا و رسانه', channel: 'رسانه آنلاین', exp: '۳ سال نویسندگی', status: 'approved' }
-            ],
-            members: [
-                { id: 1, name: 'زهرا رضایی', pos: 'تولید محتوا و رسانه', date: '۱۴۰۵/۰۷/۱۵' },
-                { id: 2, name: 'رضا اکبری', pos: 'پشتیبانی و فنی', date: '۱۴۰۵/۰۷/۱۸' }
-            ],
-            news: [
-                { id: 1, title: 'خیزش گروه‌های جهادی برای خدمت به مناطق محروم', text: 'جزئیات کامل برنامه‌ریزی حضور گروه‌های جهادی اعلام شد...', date: '۱۴۰۵/۰۸/۰۶' },
-                { id: 2, title: 'پاسخ مسئول تیم میعاد به نامه‌های جمعی از فعالان فرهنگی', text: 'متن پاسخ و تقدیر از فعالین رسانه‌ای منتشر گردید.', date: '۱۴۰۵/۰۸/۰۴' }
-            ],
-            messages: [
-                { id: 1, title: 'پیام تقدیر از نخبه‌ها و مدال‌آوران تیم‌های مردمی', date: '۱۴۰۵/۰۸/۰۴' }
-            ],
-            media: [
-                { id: 1, title: 'اردوی جهادی خدمت‌رسانی', desc: 'حضور فعالین تیم میعاد در منطقه', url: 'https://picsum.photos/500/300?random=10' }
-            ]
-        };
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderPublicNews();
-            renderPublicMessages();
-            renderPublicGallery();
-        });
-
-        function toggleTheme() {
-            document.body.classList.toggle('dark-mode');
-            const btn = document.getElementById('themeBtn');
-            btn.innerHTML = document.body.classList.contains('dark-mode') ? '<i class="fa-solid fa-moon"></i>' : '<i class="fa-solid fa-sun"></i>';
-        }
-
-        function toggleSidebar() {
-            document.getElementById('sidebar').classList.toggle('active');
-            document.getElementById('overlay').classList.toggle('active');
-        }
-
-        function switchPublicTab(tabName, btnEl) {
-            document.querySelectorAll('.page-section').forEach(el => el.style.display = 'none');
-            document.getElementById('section-' + tabName).style.display = 'block';
-
-            document.querySelectorAll('.bottom-nav .nav-item').forEach(btn => btn.classList.remove('active'));
-            if(btnEl) {
-                btnEl.classList.add('active');
-            } else {
-                const navMap = { home: 'nav-home', announcements: 'nav-announcements', about: 'nav-about', messages: 'nav-messages' };
-                if(navMap[tabName]) document.getElementById(navMap[tabName]).classList.add('active');
-            }
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
-
-        function renderPublicNews() {
-            const homeBox = document.getElementById('home-news-container');
-            const annBox = document.getElementById('announcements-container');
-            homeBox.innerHTML = '';
-            annBox.innerHTML = '';
-
-            siteData.news.forEach(item => {
-                homeBox.innerHTML += `
-                    <div class="message-card">
-                        <div class="message-title">${item.title}</div>
-                        <div class="message-badge">${item.date}</div>
-                    </div>
-                `;
-                annBox.innerHTML += `
-                    <div class="message-card" style="flex-direction: column; align-items: flex-start; gap: 8px;">
-                        <div style="display: flex; justify-content: space-between; width: 100%;">
-                            <span class="message-badge">${item.date}</span>
-                            <span style="font-size: 0.7rem; color: var(--accent-gold); font-weight: bold;">اطلاعیه رسمی</span>
-                        </div>
-                        <div class="message-title" style="font-size: 0.95rem;">${item.title}</div>
-                        <p style="font-size: 0.78rem; color: var(--text-secondary); line-height: 1.6;">${item.text}</p>
-                    </div>
-                `;
-            });
-        }
-
-        function renderPublicMessages() {
-            const box = document.getElementById('public-messages-container');
-            box.innerHTML = '';
-            siteData.messages.forEach(m => {
-                box.innerHTML += `
-                    <div class="message-card">
-                        <div class="message-title">${m.title}</div>
-                        <div class="message-badge">${m.date}</div>
-                    </div>
-                `;
-            });
-        }
-
-        function renderPublicGallery() {
-            const box = document.getElementById('gallery-container');
-            box.innerHTML = '';
-            siteData.media.forEach(img => {
-                box.innerHTML += `
-                    <div style="background: var(--surface-color); border-radius: 14px; overflow: hidden; border: 1px solid var(--border-color); box-shadow: var(--card-shadow);">
-                        <img src="${img.url}" style="width: 100%; height: 180px; object-fit: cover;">
-                        <div style="padding: 12px;">
-                            <h4 style="font-size: 0.9rem; color: var(--accent-gold);">${img.title}</h4>
-                            <p style="font-size: 0.78rem; color: var(--text-secondary); margin-top: 4px;">${img.desc}</p>
-                        </div>
-                    </div>
-                `;
-            });
-        }
-
-        // استعلام واقعی کد دعوت هنگام ثبت نام
-        function submitForm(event) {
-            event.preventDefault();
-            const inviteInput = document.getElementById('form-invite').value.trim();
-
-            if (inviteInput !== '') {
-                if (inviteInput !== siteData.inviteCode) {
-                    alert('خطا: کد دعوت وارد شده نامعتبر یا اشتباه است!');
-                    return;
-                }
-            }
-
-            const newCode = 'MC-' + Math.floor(1000 + Math.random() * 9000);
-            const newReq = {
-                code: newCode,
-                name: document.getElementById('form-fullname').value,
-                shad: document.getElementById('form-shad').value,
-                phone: document.getElementById('form-phone').value,
-                pos: document.getElementById('form-position').value,
-                channel: document.getElementById('form-channel').value || 'ندارد',
-                exp: document.getElementById('form-exp').value,
-                status: 'pending'
-            };
-
-            siteData.requests.unshift(newReq);
-            alert('درخواست شما با موفقیت ثبت شد!\nکد پیگیری شما: ' + newCode);
-            document.querySelector('#section-apply form').reset();
-            switchPublicTab('home', null);
-            updateAdminDashboard();
-        }
-
-        function closeModal(id) { document.getElementById(id).style.display = 'none'; }
-        function openSearchModal() { document.getElementById('search-modal').style.display = 'flex'; }
-
-        function performGlobalSearch() {
-            const query = document.getElementById('global-search-input').value.toLowerCase().trim();
-            const resultsBox = document.getElementById('search-results-box');
-            resultsBox.innerHTML = '';
-            if(!query) { resultsBox.innerHTML = '<p style="font-size:0.8rem; color:var(--text-secondary);">عبارتی را وارد کنید...</p>'; return; }
-
-            let found = 0;
-            siteData.news.forEach(n => {
-                if(n.title.toLowerCase().includes(query)) {
-                    found++;
-                    resultsBox.innerHTML += `<div style="background:var(--bg-color); padding:8px; border-radius:8px; font-size:0.8rem; cursor:pointer;" onclick="closeModal('search-modal'); switchPublicTab('announcements', null);"><b>[خبر]</b> ${n.title}</div>`;
-                }
-            });
-            if(found === 0) resultsBox.innerHTML = '<p style="font-size:0.8rem; color:var(--danger);">موردی یافت نشد!</p>';
-        }
-
-        function openLoginPage() { toggleSidebar(); document.getElementById('login-page').style.display = 'block'; }
-        function closeLoginPage() { document.getElementById('login-page').style.display = 'none'; }
-
-        function checkLogin() {
-            if (document.getElementById('adminUser').value === siteData.adminUser && document.getElementById('adminPass').value === siteData.adminPass) {
-                closeLoginPage();
-                document.getElementById('admin-panel-page').style.display = 'block';
-                updateAdminDashboard();
-            } else {
-                alert('نام کاربری یا رمز عبور اشتباه است!');
-            }
-        }
-        function logoutAdmin() { document.getElementById('admin-panel-page').style.display = 'none'; }
-
-        function switchAdminTab(tabKey, btnEl) {
-            document.querySelectorAll('.atab-content').forEach(el => el.style.display = 'none');
-            document.getElementById('atab-' + tabKey).style.display = 'block';
-            document.querySelectorAll('.tab-btn').forEach(btn => btn.classList.remove('active'));
-            if(btnEl) btnEl.classList.add('active');
-
-            if(tabKey === 'reports') renderCharts();
-            if(tabKey === 'reqs') renderReqsTable();
-            if(tabKey === 'members') renderMembersTable();
-            if(tabKey === 'news') renderNewsAdminTable();
-            if(tabKey === 'msgs') renderMsgsAdminTable();
-            if(tabKey === 'media') renderMediaAdminList();
-        }
-
-        function updateAdminDashboard() {
-            const pending = siteData.requests.filter(r => r.status === 'pending').length;
-            document.getElementById('pending-count-badge').innerText = pending;
-            document.getElementById('dash-total-reqs').innerText = siteData.requests.length;
-            document.getElementById('dash-pending-reqs').innerText = pending;
-            document.getElementById('dash-active-members').innerText = siteData.members.length;
-            document.getElementById('dash-rejected-reqs').innerText = siteData.requests.filter(r => r.status === 'rejected').length;
-
-            const dashTbody = document.getElementById('dash-latest-reqs-tbody');
-            dashTbody.innerHTML = '';
-            siteData.requests.slice(0, 5).forEach(req => {
-                const badgeClass = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
-                const badgeText = req.status === 'pending' ? 'در انتظار' : (req.status === 'approved' ? 'تأییدشده' : 'ردشده');
-                dashTbody.innerHTML += `<tr><td>${req.code}</td><td>${req.name}</td><td><span class="status-badge ${badgeClass}">${badgeText}</span></td><td><button class="small-btn btn-info" onclick="viewReqDetails('${req.code}')"><i class="fa-solid fa-eye"></i></button></td></tr>`;
-            });
-        }
-
-        function renderReqsTable() {
-            const tbody = document.getElementById('all-reqs-tbody');
-            tbody.innerHTML = '';
-            siteData.requests.forEach(req => {
-                const badgeClass = req.status === 'pending' ? 'status-pending' : (req.status === 'approved' ? 'status-approved' : 'status-rejected');
-                const badgeText = req.status === 'pending' ? 'در انتظار' : (req.status === 'approved' ? 'تأییدشده' : 'ردشده');
-                tbody.innerHTML += `<tr><td>${req.code}</td><td>${req.name}</td><td><span class="status-badge ${badgeClass}">${badgeText}</span></td><td><button class="small-btn btn-info" onclick="viewReqDetails('${req.code}')"><i class="fa-solid fa-eye"></i> مشاهده</button></td></tr>`;
-            });
-        }
-
-        function filterReqsTable() {
-            const q = document.getElementById('search-reqs-input').value.toLowerCase();
-            document.querySelectorAll('#all-reqs-tbody tr').forEach(r => r.style.display = r.innerText.toLowerCase().includes(q) ? '' : 'none');
-        }
-
-        function viewReqDetails(code) {
-            const req = siteData.requests.find(r => r.code === code);
-            if(!req) return;
-            document.getElementById('req-modal-body').innerHTML = `<b>کد:</b> ${req.code}<br><b>نام:</b> ${req.name}<br><b>شاد:</b> ${req.shad}<br><b>تلفن:</b> ${req.phone}<br><b>سمت:</b> ${req.pos}<br><b>سابقه:</b> ${req.exp}`;
-            document.getElementById('req-modal-actions').innerHTML = `<div style="display:flex; gap:8px;"><button class="small-btn btn-success" onclick="changeReqStatus('${req.code}', 'approved')"><i class="fa-solid fa-check"></i> تأیید</button><button class="small-btn btn-danger" onclick="changeReqStatus('${req.code}', 'rejected')"><i class="fa-solid fa-xmark"></i> رد</button></div>`;
-            document.getElementById('request-details-modal').style.display = 'flex';
-        }
-
-        function changeReqStatus(code, newStatus) {
-            const req = siteData.requests.find(r => r.code === code);
-            if(!req) return;
-            req.status = newStatus;
-            if(newStatus === 'approved' && !siteData.members.some(m => m.name === req.name)) {
-                siteData.members.push({ id: Date.now(), name: req.name, pos: req.pos, date: '۱۴۰۵/۰۸/۰۸' });
-            }
-            alert('وضعیت به روز شد.');
-            closeModal('request-details-modal');
-            updateAdminDashboard();
-            renderReqsTable();
-        }
-
-        function renderMembersTable() {
-            const tbody = document.getElementById('members-table-tbody');
-            tbody.innerHTML = '';
-            siteData.members.forEach(m => {
-                tbody.innerHTML += `<tr><td>${m.name}</td><td>${m.pos}</td><td>${m.date}</td><td><button class="small-btn btn-warning" onclick="resignMember(${m.id})">استعفا</button> <button class="small-btn btn-danger" onclick="deleteMember(${m.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`;
-            });
-        }
-        function resignMember(id) { siteData.members = siteData.members.filter(m => m.id !== id); renderMembersTable(); updateAdminDashboard(); alert('استعفا ثبت شد.'); }
-        function deleteMember(id) { siteData.members = siteData.members.filter(m => m.id !== id); renderMembersTable(); updateAdminDashboard(); }
-
-        function openAddNewsModal() { document.getElementById('add-news-modal').style.display = 'flex'; }
-        function saveNewNews() {
-            const title = document.getElementById('news-title-input').value.trim();
-            const text = document.getElementById('news-text-input').value.trim();
-            if(!title || !text) return;
-            siteData.news.unshift({ id: Date.now(), title, text, date: '۱۴۰۵/۰۸/۰۸' });
-            closeModal('add-news-modal'); renderPublicNews(); renderNewsAdminTable();
-        }
-        function renderNewsAdminTable() {
-            const tbody = document.getElementById('news-admin-tbody');
-            tbody.innerHTML = '';
-            siteData.news.forEach(n => tbody.innerHTML += `<tr><td>${n.title}</td><td>${n.date}</td><td><button class="small-btn btn-danger" onclick="deleteNews(${n.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`);
-        }
-        function deleteNews(id) { siteData.news = siteData.news.filter(n => n.id !== id); renderPublicNews(); renderNewsAdminTable(); }
-
-        function openAddMsgModal() { document.getElementById('add-msg-modal').style.display = 'flex'; }
-        function saveNewMessage() {
-            const title = document.getElementById('msg-title-input').value.trim();
-            if(!title) return;
-            siteData.messages.unshift({ id: Date.now(), title, date: '۱۴۰۵/۰۸/۰۸' });
-            closeModal('add-msg-modal'); renderPublicMessages(); renderMsgsAdminTable();
-        }
-        function renderMsgsAdminTable() {
-            const tbody = document.getElementById('msgs-admin-tbody');
-            tbody.innerHTML = '';
-            siteData.messages.forEach(m => tbody.innerHTML += `<tr><td>${m.title}</td><td>${m.date}</td><td><button class="small-btn btn-danger" onclick="deleteMsg(${m.id})"><i class="fa-solid fa-trash"></i></button></td></tr>`);
-        }
-        function deleteMsg(id) { siteData.messages = siteData.messages.filter(m => m.id !== id); renderPublicMessages(); renderMsgsAdminTable(); }
-
-        function openAddMediaModal() { document.getElementById('add-media-modal').style.display = 'flex'; }
-        function saveNewMedia() {
-            const title = document.getElementById('media-title-input').value.trim();
-            const desc = document.getElementById('media-desc-input').value.trim();
-            const url = document.getElementById('media-url-input').value.trim() || 'https://picsum.photos/500/300?random=' + Math.random();
-            if(!title) return;
-            siteData.media.unshift({ id: Date.now(), title, desc, url });
-            closeModal('add-media-modal'); renderPublicGallery(); renderMediaAdminList();
-        }
-        function renderMediaAdminList() {
-            const box = document.getElementById('media-admin-list');
-            box.innerHTML = '';
-            siteData.media.forEach(m => box.innerHTML += `<div style="background:var(--bg-color); padding:8px; border-radius:10px;"><img src="${m.url}" style="width:100%; height:80px; object-fit:cover; border-radius:6px;"><b>${m.title}</b><button class="small-btn btn-danger" style="margin-top:5px; width:100%;" onclick="deleteMedia(${m.id})">حذف</button></div>`);
-        }
-        function deleteMedia(id) { siteData.media = siteData.media.filter(m => m.id !== id); renderPublicGallery(); renderMediaAdminList(); }
-
-        function saveUserSettings(e) {
-            e.preventDefault();
-            siteData.adminName = document.getElementById('user-fname').value + ' ' + document.getElementById('user-lname').value;
-            siteData.adminUser = document.getElementById('user-uname').value;
-            siteData.adminPass = document.getElementById('user-pass').value;
-            alert('اطلاعات کاربری بروزرسانی شد!');
-        }
-
+        // تنظیمات عمومی پروژه؛ کلید Publishable برای استفاده در مرورگر طراحی شده است.
+        const SUPABASE_URL = 'https://mbvgzudvcplhrwkgofss.supabase.co';
+        const SUPABASE_PUBLISHABLE_KEY = 'sb_publishable_82M-7TJ8uS2Xa0iztUy-5A_K-Crtqcz';
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+        const $ = (id) => document.getElementById(id);
+        let currentAdmin = null;
+        let siteData = { requests: [], members: [], news: [], messages: [], media: [] };
         let chart1 = null, chart2 = null;
-        function renderCharts() {
-            const pending = siteData.requests.filter(r => r.status === 'pending').length;
-            const approved = siteData.requests.filter(r => r.status === 'approved').length;
-            const rejected = siteData.requests.filter(r => r.status === 'rejected').length;
-
-            if(chart1) chart1.destroy();
-            chart1 = new Chart(document.getElementById('reqsChart').getContext('2d'), {
-                type: 'doughnut',
-                data: { labels: ['در انتظار', 'تأییدشده', 'ردشده'], datasets: [{ data: [pending, approved, rejected], backgroundColor: ['#f59e0b', '#10b981', '#ef4444'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
+        const faDate = (v) => { if (!v) return '—'; try { return new Date(v).toLocaleDateString('fa-IR'); } catch { return String(v); } };
+        const esc = (v) => String(v ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+        const notify = (message) => alert(message);
+        const reportError = (where, error) => { console.error(where, error); notify(where + '\n' + (error?.message || 'خطای نامشخص')); };
+        document.addEventListener('DOMContentLoaded', async () => {
+            // حذف داده‌های نمونه از نسخه عمومی؛ محتوای واقعی از دیتابیس خوانده می‌شود.
+            await loadPublicData();
+            const { data: { session } } = await sb.auth.getSession();
+            if (session) await restoreAdminSession();
+            sb.auth.onAuthStateChange((event, session) => {
+                if (event === 'SIGNED_OUT') { currentAdmin = null; $('admin-panel-page').style.display = 'none'; }
             });
-
-            if(chart2) chart2.destroy();
-            chart2 = new Chart(document.getElementById('membersBarChart').getContext('2d'), {
-                type: 'bar',
-                data: { labels: ['کل درخواست‌ها', 'همکاران فعال'], datasets: [{ label: 'آمار', data: [siteData.requests.length, siteData.members.length], backgroundColor: ['#3b82f6', '#c5a059'] }] },
-                options: { responsive: true, maintainAspectRatio: false }
-            });
+        });
+        async function loadPublicData() {
+            try {
+                const [newsR, msgR, mediaR, membersR] = await Promise.all([
+                    sb.from('news').select('*').eq('is_published', true).order('published_at', {ascending:false, nullsFirst:false}).order('created_at',{ascending:false}),
+                    sb.from('messages').select('*').eq('is_visible', true).order('created_at',{ascending:false}),
+                    sb.from('media').select('*').eq('is_visible', true).order('sort_order',{ascending:true}).order('created_at',{ascending:false}),
+                    sb.from('members').select('*').eq('status','active').order('joined_at',{ascending:false})
+                ]);
+                if (newsR.error) throw newsR.error; if (msgR.error) throw msgR.error; if (mediaR.error) throw mediaR.error; if (membersR.error) throw membersR.error;
+                siteData.news = (newsR.data||[]).map(n=>({...n, text:n.content || n.summary || '', date:faDate(n.published_at || n.created_at)}));
+                siteData.messages = (msgR.data||[]).map(m=>({...m, title:m.name || m.message, date:faDate(m.created_at)}));
+                siteData.media = (mediaR.data||[]).map(m=>({...m, url:m.file_url, desc:m.description||''}));
+                siteData.members = (membersR.data||[]).map(m=>({...m, name:m.full_name, pos:m.role, date:faDate(m.joined_at)}));
+                renderPublicNews(); renderPublicMessages(); renderPublicGallery();
+            } catch (e) { console.error('loadPublicData',e); renderPublicNews(); renderPublicMessages(); renderPublicGallery(); }
         }
+        function toggleTheme() { document.body.classList.toggle('dark-mode'); const btn=$('themeBtn'); if(btn) btn.innerHTML=document.body.classList.contains('dark-mode')?'<i class="fa-solid fa-moon"></i>':'<i class="fa-solid fa-sun"></i>'; }
+        function toggleSidebar() { $('sidebar').classList.toggle('active'); $('overlay').classList.toggle('active'); }
+        function switchPublicTab(tabName, btnEl) {
+            document.querySelectorAll('.page-section').forEach(el=>el.style.display='none'); const target=$('section-'+tabName); if(target) target.style.display='block';
+            document.querySelectorAll('.bottom-nav .nav-item').forEach(btn=>btn.classList.remove('active'));
+            if(btnEl) btnEl.classList.add('active'); else { const navMap={home:'nav-home',announcements:'nav-announcements',about:'nav-about',messages:'nav-messages'}; if(navMap[tabName] && $(navMap[tabName])) $(navMap[tabName]).classList.add('active'); }
+            window.scrollTo({top:0,behavior:'smooth'});
+        }
+        function renderPublicNews() {
+            const homeBox=$('home-news-container'), annBox=$('announcements-container'); if(!homeBox||!annBox)return; homeBox.innerHTML=''; annBox.innerHTML='';
+            if(!siteData.news.length){homeBox.innerHTML='<p class="message-card">هنوز خبری منتشر نشده است.</p>';annBox.innerHTML='<p class="message-card">هنوز اطلاعیه‌ای منتشر نشده است.</p>';return;}
+            siteData.news.forEach(item=>{homeBox.insertAdjacentHTML('beforeend',`<div class="message-card"><div class="message-title">${esc(item.title)}</div><div class="message-badge">${esc(item.date)}</div></div>`); annBox.insertAdjacentHTML('beforeend',`<div class="message-card" style="flex-direction:column;align-items:flex-start;gap:8px;"><div style="display:flex;justify-content:space-between;width:100%;"><span class="message-badge">${esc(item.date)}</span><span style="font-size:.7rem;color:var(--accent-gold);font-weight:bold;">اطلاعیه رسمی</span></div><div class="message-title" style="font-size:.95rem;">${esc(item.title)}</div><p style="font-size:.78rem;color:var(--text-secondary);line-height:1.6;">${esc(item.text)}</p></div>`);});
+        }
+        function renderPublicMessages() { const box=$('public-messages-container'); if(!box)return; box.innerHTML=''; if(!siteData.messages.length){box.innerHTML='<p class="message-card">پیامی برای نمایش وجود ندارد.</p>';return;} siteData.messages.forEach(m=>box.insertAdjacentHTML('beforeend',`<div class="message-card"><div class="message-title">${esc(m.title)}</div><div class="message-badge">${esc(m.date)}</div></div>`)); }
+        function renderPublicGallery() { const box=$('gallery-container'); if(!box)return; box.innerHTML=''; if(!siteData.media.length){box.innerHTML='<p class="message-card">هنوز تصویری در گالری قرار نگرفته است.</p>';return;} siteData.media.forEach(img=>{if(!img.url)return;box.insertAdjacentHTML('beforeend',`<div style="background:var(--surface-color);border-radius:14px;overflow:hidden;border:1px solid var(--border-color);box-shadow:var(--card-shadow);"><img loading="lazy" src="${esc(img.url)}" alt="${esc(img.title)}" style="width:100%;height:180px;object-fit:cover;"><div style="padding:12px;"><h4 style="font-size:.9rem;color:var(--accent-gold);">${esc(img.title)}</h4><p style="font-size:.78rem;color:var(--text-secondary);margin-top:4px;">${esc(img.desc)}</p></div></div>`);}); }
+        async function submitForm(event) {
+            event.preventDefault(); const inviteInput=$('form-invite').value.trim();
+            if(inviteInput){const {data:validInvite,error:inviteError}=await sb.rpc('verify_miad_invite_code',{input_code:inviteInput});if(inviteError||validInvite!==true){notify('کد دعوت نامعتبر است یا بررسی آن انجام نشد.');return;}}
+            const name=$('form-fullname').value.trim(), shad=$('form-shad').value.trim(), phone=$('form-phone').value.trim(), pos=$('form-position').value, channel=$('form-channel').value.trim()||'ندارد', exp=$('form-exp').value.trim();
+            if(name.length<2||!shad||!phone||!pos||exp.length<2){notify('لطفاً همه اطلاعات ضروری را کامل کنید.');return;}
+            const code='MC-'+Date.now().toString().slice(-8);
+            const {error}=await sb.from('requests').insert({code,name,shad,phone,pos,channel,exp,status:'pending',admin_note:null});
+            if(error){reportError('ثبت درخواست انجام نشد.',error);return;}
+            notify('درخواست شما با موفقیت ثبت شد.\nکد پیگیری: '+code); document.querySelector('#section-apply form').reset(); switchPublicTab('home',null);
+            if(currentAdmin) await loadAdminData();
+        }
+        function closeModal(id){if($(id))$(id).style.display='none';} function openSearchModal(){$('search-modal').style.display='flex';}
+        function performGlobalSearch(){const query=$('global-search-input').value.toLowerCase().trim(),box=$('search-results-box');box.innerHTML='';if(!query){box.innerHTML='<p style="font-size:.8rem;color:var(--text-secondary);">عبارتی را وارد کنید...</p>';return;}const found=siteData.news.filter(n=>(n.title||'').toLowerCase().includes(query));if(!found.length){box.innerHTML='<p style="font-size:.8rem;color:var(--danger);">موردی یافت نشد!</p>';return;}found.forEach(n=>box.insertAdjacentHTML('beforeend',`<div style="background:var(--bg-color);padding:8px;border-radius:8px;font-size:.8rem;cursor:pointer;" onclick="closeModal('search-modal');switchPublicTab('announcements',null);"><b>[خبر]</b> ${esc(n.title)}</div>`));}
+        function openLoginPage(){if($('sidebar').classList.contains('active'))toggleSidebar();$('login-page').style.display='block';} function closeLoginPage(){$('login-page').style.display='none';}
+        async function restoreAdminSession(){const {data:{user}}=await sb.auth.getUser();if(!user)return;const {data:profile,error}=await sb.from('admin_profiles').select('user_id,full_name,role,is_active').eq('user_id',user.id).maybeSingle();if(error||!profile||!profile.is_active||!['admin','editor'].includes(profile.role)){await sb.auth.signOut();notify('این حساب دسترسی فعال مدیریت سایت را ندارد.');return;}currentAdmin={user,profile};$('admin-panel-page').style.display='block';$('login-page').style.display='none';await loadAdminData();}
+        async function checkLogin(){const email=$('adminUser').value.trim(),password=$('adminPass').value;if(!email||!password){notify('ایمیل و رمز عبور را وارد کنید.');return;}const {error}=await sb.auth.signInWithPassword({email,password});if(error){notify('ورود ناموفق بود: '+error.message);return;}await restoreAdminSession();}
+        async function logoutAdmin(){await sb.auth.signOut();currentAdmin=null;$('admin-panel-page').style.display='none';$('login-page').style.display='none';}
+        async function loadAdminData(){if(!currentAdmin)return;try{const [r,m,n,msg,med]=await Promise.all([sb.from('requests').select('*').order('created_at',{ascending:false}),sb.from('members').select('*').order('created_at',{ascending:false}),sb.from('news').select('*').order('created_at',{ascending:false}),sb.from('messages').select('*').order('created_at',{ascending:false}),sb.from('media').select('*').order('sort_order',{ascending:true}).order('created_at',{ascending:false})]);for(const x of [r,m,n,msg,med])if(x.error)throw x.error;siteData.requests=(r.data||[]);siteData.members=(m.data||[]).map(x=>({...x,name:x.full_name,pos:x.role,date:faDate(x.joined_at)}));siteData.news=(n.data||[]).map(x=>({...x,text:x.content||x.summary||'',date:faDate(x.published_at||x.created_at)}));siteData.messages=(msg.data||[]).map(x=>({...x,title:x.name||x.message,date:faDate(x.created_at)}));siteData.media=(med.data||[]).map(x=>({...x,url:x.file_url,desc:x.description||''}));renderPublicNews();renderPublicMessages();renderPublicGallery();updateAdminDashboard();renderReqsTable();renderMembersTable();renderNewsAdminTable();renderMsgsAdminTable();renderMediaAdminList();}catch(e){reportError('دریافت اطلاعات پنل مدیریت با خطا روبه‌رو شد.',e);}}
+        function switchAdminTab(tabKey,btnEl){document.querySelectorAll('.atab-content').forEach(el=>el.style.display='none');if($('atab-'+tabKey))$('atab-'+tabKey).style.display='block';document.querySelectorAll('.tab-btn').forEach(btn=>btn.classList.remove('active'));if(btnEl)btnEl.classList.add('active');if(tabKey==='reports')renderCharts();if(tabKey==='reqs')renderReqsTable();if(tabKey==='members')renderMembersTable();if(tabKey==='news')renderNewsAdminTable();if(tabKey==='msgs')renderMsgsAdminTable();if(tabKey==='media')renderMediaAdminList();}
+        function updateAdminDashboard(){const pending=siteData.requests.filter(r=>r.status==='pending').length;$('pending-count-badge').innerText=pending;$('dash-total-reqs').innerText=siteData.requests.length;$('dash-pending-reqs').innerText=pending;$('dash-active-members').innerText=siteData.members.filter(m=>m.status==='active').length;$('dash-rejected-reqs').innerText=siteData.requests.filter(r=>r.status==='rejected').length;const tb=$('dash-latest-reqs-tbody');tb.innerHTML='';siteData.requests.slice(0,5).forEach(req=>{const cls=req.status==='pending'?'status-pending':(req.status==='approved'?'status-approved':'status-rejected'),txt=req.status==='pending'?'در انتظار':(req.status==='approved'?'تأییدشده':'ردشده');tb.insertAdjacentHTML('beforeend',`<tr><td>${esc(req.code)}</td><td>${esc(req.name)}</td><td><span class="status-badge ${cls}">${txt}</span></td><td><button class="small-btn btn-info" onclick="viewReqDetails('${esc(req.code)}')"><i class="fa-solid fa-eye"></i></button></td></tr>`);});}
+        function renderReqsTable(){const tb=$('all-reqs-tbody');tb.innerHTML='';siteData.requests.forEach(r=>{const cls=r.status==='pending'?'status-pending':(r.status==='approved'?'status-approved':'status-rejected'),txt=r.status==='pending'?'در انتظار':(r.status==='approved'?'تأییدشده':'ردشده');tb.insertAdjacentHTML('beforeend',`<tr><td>${esc(r.code)}</td><td>${esc(r.name)}</td><td><span class="status-badge ${cls}">${txt}</span></td><td><button class="small-btn btn-info" onclick="viewReqDetails('${esc(r.code)}')"><i class="fa-solid fa-eye"></i> مشاهده</button></td></tr>`);});}
+        function filterReqsTable(){const q=$('search-reqs-input').value.toLowerCase();document.querySelectorAll('#all-reqs-tbody tr').forEach(r=>r.style.display=r.innerText.toLowerCase().includes(q)?'':'none');}
+        function viewReqDetails(code){const r=siteData.requests.find(x=>x.code===code);if(!r)return;$('req-modal-body').innerHTML=`<b>کد:</b> ${esc(r.code)}<br><b>نام:</b> ${esc(r.name)}<br><b>شناسه شاد:</b> ${esc(r.shad)}<br><b>تلفن:</b> ${esc(r.phone)}<br><b>سمت:</b> ${esc(r.pos)}<br><b>کانال:</b> ${esc(r.channel)}<br><b>سابقه:</b> ${esc(r.exp)}<br><b>یادداشت مدیر:</b> ${esc(r.admin_note||'—')}`;$('req-modal-actions').innerHTML=`<div style="display:flex;gap:8px;flex-wrap:wrap;"><button class="small-btn btn-success" onclick="changeReqStatus('${esc(r.code)}','approved')">تأیید</button><button class="small-btn btn-danger" onclick="changeReqStatus('${esc(r.code)}','rejected')">رد</button><button class="small-btn btn-warning" onclick="changeReqStatus('${esc(r.code)}','pending')">در انتظار</button></div>`;$('request-details-modal').style.display='flex';}
+        async function changeReqStatus(code,status){const {error}=await sb.from('requests').update({status,updated_at:new Date().toISOString()}).eq('code',code);if(error){reportError('تغییر وضعیت ناموفق بود.',error);return;}const req=siteData.requests.find(r=>r.code===code);if(req){req.status=status;if(status==='approved'){const exists=siteData.members.some(m=>m.phone===req.phone);if(!exists){const {error:me}=await sb.from('members').insert({full_name:req.name,shad:req.shad,phone:req.phone,role:req.pos,status:'active',joined_at:new Date().toISOString()});if(me)console.error('افزودن عضو ناموفق بود',me);}}}notify('وضعیت درخواست به‌روزرسانی شد.');closeModal('request-details-modal');await loadAdminData();}
+        function renderMembersTable(){const tb=$('members-table-tbody');tb.innerHTML='';siteData.members.forEach(m=>tb.insertAdjacentHTML('beforeend',`<tr><td>${esc(m.full_name||m.name)}</td><td>${esc(m.role||m.pos)}</td><td>${esc(m.date||faDate(m.joined_at))}</td><td><button class="small-btn btn-warning" onclick="resignMember(${Number(m.id)})">غیرفعال‌سازی</button> <button class="small-btn btn-danger" onclick="deleteMember(${Number(m.id)})"><i class="fa-solid fa-trash"></i></button></td></tr>`));}
+        async function resignMember(id){const {error}=await sb.from('members').update({status:'inactive'}).eq('id',id);if(error){reportError('غیرفعال‌سازی عضو ناموفق بود.',error);return;}await loadAdminData();notify('عضو غیرفعال شد.');}
+        async function deleteMember(id){if(!confirm('عضو حذف شود؟'))return;const {error}=await sb.from('members').delete().eq('id',id);if(error){reportError('حذف عضو ناموفق بود.',error);return;}await loadAdminData();}
+        function openAddNewsModal(){$('add-news-modal').style.display='flex';}
+        async function saveNewNews(){const title=$('news-title-input').value.trim(),content=$('news-text-input').value.trim();if(!title||!content){notify('عنوان و متن خبر را وارد کنید.');return;}const {error}=await sb.from('news').insert({title,summary:content.slice(0,500),content,category:'اطلاعیه',is_published:true,published_at:new Date().toISOString(),created_by:currentAdmin?.user?.id});if(error){reportError('انتشار خبر ناموفق بود.',error);return;}$('news-title-input').value='';$('news-text-input').value='';closeModal('add-news-modal');await loadAdminData();notify('خبر منتشر شد.');}
+        function renderNewsAdminTable(){const tb=$('news-admin-tbody');tb.innerHTML='';siteData.news.forEach(n=>tb.insertAdjacentHTML('beforeend',`<tr><td>${esc(n.title)}</td><td>${esc(n.date||faDate(n.created_at))}</td><td><button class="small-btn btn-danger" onclick="deleteNews(${Number(n.id)})"><i class="fa-solid fa-trash"></i></button></td></tr>`));}
+        async function deleteNews(id){if(!confirm('خبر حذف شود؟'))return;const {error}=await sb.from('news').delete().eq('id',id);if(error){reportError('حذف خبر ناموفق بود.',error);return;}await loadAdminData();}
+        function openAddMsgModal(){$('add-msg-modal').style.display='flex';}
+        async function saveNewMessage(){const name=$('msg-title-input').value.trim();if(!name){notify('متن پیام را وارد کنید.');return;}const {error}=await sb.from('messages').insert({name,message:name,is_visible:true,admin_note:null});if(error){reportError('ثبت پیام ناموفق بود.',error);return;}$('msg-title-input').value='';closeModal('add-msg-modal');await loadAdminData();notify('پیام ثبت شد.');}
+        function renderMsgsAdminTable(){const tb=$('msgs-admin-tbody');tb.innerHTML='';siteData.messages.forEach(m=>tb.insertAdjacentHTML('beforeend',`<tr><td>${esc(m.name||m.title)}</td><td>${esc(m.date||faDate(m.created_at))}</td><td><button class="small-btn btn-danger" onclick="deleteMsg(${Number(m.id)})"><i class="fa-solid fa-trash"></i></button></td></tr>`));}
+        async function deleteMsg(id){if(!confirm('پیام حذف شود؟'))return;const {error}=await sb.from('messages').delete().eq('id',id);if(error){reportError('حذف پیام ناموفق بود.',error);return;}await loadAdminData();}
+        function openAddMediaModal(){$('add-media-modal').style.display='flex';}
+        async function saveNewMedia(){const title=$('media-title-input').value.trim(),description=$('media-desc-input').value.trim();let url=$('media-url-input').value.trim();const file=$('media-file-input')?.files?.[0];if(!title||(!url&&!file)){notify('عنوان را وارد کنید و یک تصویر انتخاب کنید یا لینک مستقیم بدهید.');return;}if(file){if(!file.type.startsWith('image/')){notify('فقط فایل تصویری مجاز است.');return;}if(file.size>8*1024*1024){notify('حجم تصویر باید کمتر از ۸ مگابایت باشد.');return;}const safeName=file.name.replace(/[^a-zA-Z0-9._-]/g,'_');const path=`${Date.now()}-${safeName}`;const {error:uploadError}=await sb.storage.from('miad-media').upload(path,file,{upsert:false,contentType:file.type});if(uploadError){reportError('بارگذاری تصویر انجام نشد.',uploadError);return;}url=sb.storage.from('miad-media').getPublicUrl(path).data.publicUrl;}else{try{new URL(url);}catch{notify('لینک تصویر معتبر نیست.');return;}}const {error}=await sb.from('media').insert({title,description,file_url:url,file_path:file?url.split('/miad-media/')[1]?.split('?')[0]||null:null,media_type:'image',is_visible:true,sort_order:0});if(error){reportError('افزودن تصویر ناموفق بود.',error);return;} $('media-title-input').value='';$('media-desc-input').value='';$('media-url-input').value='';if($('media-file-input'))$('media-file-input').value='';closeModal('add-media-modal');await loadAdminData();notify('تصویر به گالری افزوده شد.');}
+        function renderMediaAdminList(){const box=$('media-admin-list');box.innerHTML='';siteData.media.forEach(m=>box.insertAdjacentHTML('beforeend',`<div style="background:var(--bg-color);padding:8px;border-radius:10px;"><img src="${esc(m.url||m.file_url||'')}" alt="${esc(m.title)}" style="width:100%;height:80px;object-fit:cover;border-radius:6px;"><b>${esc(m.title)}</b><button class="small-btn btn-danger" style="margin-top:5px;width:100%;" onclick="deleteMedia(${Number(m.id)})">حذف</button></div>`));}
+        async function deleteMedia(id){if(!confirm('این تصویر از گالری حذف شود؟'))return;const {error}=await sb.from('media').delete().eq('id',id);if(error){reportError('حذف تصویر ناموفق بود.',error);return;}await loadAdminData();}
+        async function saveUserSettings(e){e.preventDefault();const fullName=($('user-fname').value.trim()+' '+$('user-lname').value.trim()).trim(),email=$('user-uname').value.trim(),password=$('user-pass').value;if(!currentAdmin){notify('ابتدا وارد پنل شوید.');return;}const profileUpdate=await sb.from('admin_profiles').update({full_name:fullName}).eq('user_id',currentAdmin.user.id);if(profileUpdate.error)console.warn('نام پروفایل در دیتابیس به‌روزرسانی نشد؛ برای امنیت policy تغییر پروفایل غیرفعال است.',profileUpdate.error);const changes={};if(email)changes.email=email;if(password)changes.password=password;if(Object.keys(changes).length){const {error}=await sb.auth.updateUser(changes);if(error){reportError('تغییر اطلاعات حساب ناموفق بود.',error);return;}}$('user-uname').value='';$('user-pass').value='';notify('در صورت وارد کردن ایمیل یا رمز جدید، تغییر حساب درخواست شد. برای تغییر نام نمایشی، مدیر اصلی باید admin_profiles را در پنل Supabase به‌روزرسانی کند.');}
+        function renderCharts(){const pending=siteData.requests.filter(r=>r.status==='pending').length,approved=siteData.requests.filter(r=>r.status==='approved').length,rejected=siteData.requests.filter(r=>r.status==='rejected').length;if(chart1)chart1.destroy();chart1=new Chart($('reqsChart').getContext('2d'),{type:'doughnut',data:{labels:['در انتظار','تأییدشده','ردشده'],datasets:[{data:[pending,approved,rejected],backgroundColor:['#f59e0b','#10b981','#ef4444']}]},options:{responsive:true,maintainAspectRatio:false}});if(chart2)chart2.destroy();chart2=new Chart($('membersBarChart').getContext('2d'),{type:'bar',data:{labels:['کل درخواست‌ها','همکاران فعال'],datasets:[{label:'آمار',data:[siteData.requests.length,siteData.members.filter(m=>m.status==='active').length],backgroundColor:['#3b82f6','#c5a059']}]},options:{responsive:true,maintainAspectRatio:false}});}
     </script>
 </body>
 </html>
