@@ -26,7 +26,7 @@
   box-shadow:0 3px 14px #00000005;text-align:right;overflow:hidden;
 }
 .news-glass-panel .message-card img{display:block;width:100%!important;max-width:100%;height:150px;object-fit:cover;border-radius:13px;margin:0 0 5px!important}
-.news-glass-panel .message-title{font-size:.96rem;font-weight:400;line-height:2;color:var(--text-primary);text-align:right}
+.news-glass-panel .message-title{font-size:.96rem;font-weight:800;line-height:2;color:var(--text-primary);text-align:right}
 .news-glass-panel .message-badge{align-self:flex-start;background:transparent;color:var(--accent-gold);padding:0;font-size:.84rem;font-weight:700;border-radius:0;white-space:nowrap}
 #section-messages .messages-panel{overflow:hidden}
 #section-messages .message-card{overflow:hidden}
@@ -843,7 +843,7 @@ body { overflow-x:hidden; overflow-y:auto; }
               <div class="admin-card-section"><h4>تنظیمات هدر و کادر شیشه‌ای صفحه اصلی</h4>
                 <p class="settings-help">متن روی کادر شیشه‌ای، مقصد کلیک و تصویر هدر را از این بخش تغییر بده. تغییرات پس از ذخیره برای بازدیدکنندگان اعمال می‌شود.</p>
                 <label style="font-size:.8rem;font-weight:bold;">متن کادر شیشه‌ای:</label><textarea class="form-control" id="hero-text-input" rows="2" placeholder="متن نمایش داده‌شده روی هدر"></textarea>
-                <label style="font-size:.8rem;font-weight:bold;">لینک مقصد با کلیک روی کادر (اختیاری):</label><input type="url" class="form-control" id="hero-link-input" placeholder="https://example.com یا خالی برای بخش درباره ما">
+                <label style="font-size:.8rem;font-weight:bold;">لینک مقصد با کلیک روی کادر (اختیاری):</label><input type="text" class="form-control" id="hero-link-input" placeholder="news:latest برای آخرین خبر؛ news:شناسه برای خبر مشخص؛ یا آدرس https://">
                 <label style="font-size:.8rem;font-weight:bold;">پیش‌نمایش تصویر هدر:</label><img id="hero-settings-preview" class="hero-settings-preview" alt="پیش‌نمایش تصویر هدر">
                 <label style="font-size:.8rem;font-weight:bold;">تغییر تصویر هدر:</label><input type="file" class="form-control" id="hero-image-input" accept="image/*">
                 <div id="hero-settings-status" class="settings-help" aria-live="polite">تنظیمات فعلی بارگذاری می‌شود.</div>
@@ -867,7 +867,7 @@ const $=id=>document.getElementById(id);
 let currentAdmin=null;
 let siteData={requests:[],members:[],news:[],messages:[],media:[]};
 const DEFAULT_HERO_TEXT='سرگذشت، نگاه و چشم‌انداز مجموعه مردمی میعاد';
-let heroSettings={buttonText:DEFAULT_HERO_TEXT,buttonLink:'',imageUrl:''};
+let heroSettings={buttonText:DEFAULT_HERO_TEXT,buttonLink:'news:latest',imageUrl:''};
 let defaultHeroImage='';
 const faDate=v=>{if(!v)return'—';try{return new Date(v).toLocaleDateString('fa-IR')}catch{return String(v)}};
 const esc=v=>String(v??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -900,6 +900,14 @@ async function loadPublicData(){
 function toggleTheme(){document.body.classList.toggle('dark-mode');const icon=$('themeBtn')?.querySelector('i');if(icon)icon.className=document.body.classList.contains('dark-mode')?'fa-solid fa-moon':'fa-solid fa-sun';}
 function toggleSidebar(){$('sidebar').classList.toggle('active');$('overlay').classList.toggle('active')}
 function openArticleDetail(item,kind='message'){
+ // تب مبدأ را نگه می‌داریم تا هنگام بازگشت، نشانگر کرمی روی همان تب قبلی قرار بگیرد.
+ const activeNav=document.querySelector('.bottom-nav .nav-item.active');
+ const activeNavMap={'nav-home':'home','nav-announcements':'announcements','nav-about':'about','nav-messages':'messages'};
+ if(activeNav&&activeNavMap[activeNav.id])window.articleDetailPreviousTab=activeNavMap[activeNav.id];
+ else {
+   const visibleSection=Array.from(document.querySelectorAll('#main-website .page-section')).find(el=>getComputedStyle(el).display!=='none');
+   if(visibleSection?.id?.startsWith('section-'))window.articleDetailPreviousTab=visibleSection.id.slice('section-'.length);
+ }
  const title=item.title||'بدون عنوان',date=item.date||faDate(item.created_at)||'';
  const content=(item.content||item.text||item.message||'').trim();
  const summary=(item.summary||'').trim();
@@ -956,8 +964,8 @@ function closeArticleDetail(){
  const detailSection=$('section-detail');
  if(detailSection){['position','top','left','right','bottom','width','height','overflowY','overflowX','zIndex','background','margin','padding','boxSizing','WebkitOverflowScrolling'].forEach(k=>detailSection.style[k]='');}
  if(window.__positionArticleDetail){window.removeEventListener('resize',window.__positionArticleDetail);window.__positionArticleDetail=null;}
- const previous=window.articleDetailPreviousTab||'messages';
- switchPublicTab(previous,$(previous==='announcements'?'nav-announcements':'nav-messages'));
+ const previous=window.articleDetailPreviousTab||'home';
+ switchPublicTab(previous,null);
 }
 function switchPublicTab(tabName,btnEl){
  if(tabName!=='detail')window.articleDetailPreviousTab=tabName;
@@ -1084,6 +1092,15 @@ function applyHeroSettings(){
   cta.href=destination||'#section-about';cta.removeAttribute('target');cta.removeAttribute('rel');
   cta.onclick=function(e){
    const link=(heroSettings.buttonLink||'').trim();
+   if(/^news:(latest|[A-Za-z0-9_-]+)$/i.test(link)){
+    e.preventDefault();
+    const isLatest=link.toLowerCase()==='news:latest';
+    const requestedId=isLatest?'':link.slice(5).trim();
+    const target=isLatest?siteData.news.find(n=>n.is_published!==false):siteData.news.find(n=>String(n.id)===requestedId&&n.is_published!==false);
+    if(target){openArticleDetail(target,'news');return false;}
+    notify(isLatest?'هنوز خبر منتشرشده‌ای برای نمایش وجود ندارد.':'خبر انتخاب‌شده پیدا نشد یا منتشر نشده است. شناسه خبر و وضعیت انتشار آن را بررسی کن.');
+    return false;
+   }
    if(link){try{const u=new URL(link,window.location.href);if(['http:','https:'].includes(u.protocol)){e.preventDefault();window.location.href=u.href;return false;}}catch{}}
    e.preventDefault();switchPublicTab('about',document.getElementById('nav-about'));return false;
   };
@@ -1099,8 +1116,8 @@ async function loadHeroSettings(showStatus=false){
   else if(error)console.warn('تنظیمات صفحه اول از سرور دریافت نشد:',error.message);
  }catch(e){console.warn(e)}
  if(!cfg){try{cfg=JSON.parse(localStorage.getItem('miadHeroSettings')||'null')}catch{cfg=null}}
- if(cfg)heroSettings={buttonText:(cfg.buttonText&&cfg.buttonText.includes('پاسخ صمیمانه رهبر معظم انقلاب')?DEFAULT_HERO_TEXT:(cfg.buttonText||DEFAULT_HERO_TEXT)),buttonLink:cfg.buttonLink||'',imageUrl:cfg.imageUrl||defaultHeroImage};
- else heroSettings={buttonText:DEFAULT_HERO_TEXT,buttonLink:'',imageUrl:defaultHeroImage};
+ if(cfg)heroSettings={buttonText:(cfg.buttonText&&cfg.buttonText.includes('پاسخ صمیمانه رهبر معظم انقلاب')?DEFAULT_HERO_TEXT:(cfg.buttonText||DEFAULT_HERO_TEXT)),buttonLink:cfg.buttonLink||'news:latest',imageUrl:cfg.imageUrl||defaultHeroImage};
+ else heroSettings={buttonText:DEFAULT_HERO_TEXT,buttonLink:'news:latest',imageUrl:defaultHeroImage};
  applyHeroSettings();
  if(showStatus&&$('hero-settings-status'))$('hero-settings-status').textContent='تنظیمات فعلی بارگذاری شد.';
 }
@@ -1112,7 +1129,7 @@ $('hero-image-input')?.addEventListener('change',function(){
 async function saveHeroSettings(){
  const buttonText=$('hero-text-input').value.trim(),buttonLink=$('hero-link-input').value.trim(),file=$('hero-image-input').files?.[0];
  if(!buttonText){notify('متن کادر شیشه‌ای را وارد کن.');return}
- if(buttonLink){try{const u=new URL(buttonLink);if(!['http:','https:'].includes(u.protocol))throw new Error()}catch{notify('لینک باید با https:// یا http:// شروع شود.');return}}
+ if(buttonLink&&!/^news:(latest|[A-Za-z0-9_-]+)$/i.test(buttonLink)){try{const u=new URL(buttonLink);if(!['http:','https:'].includes(u.protocol))throw new Error()}catch{notify('لینک باید با https:// یا http:// شروع شود؛ یا برای خبر از news:latest و news:شناسه‌خبر استفاده کن.');return}}
  const status=$('hero-settings-status');if(status)status.textContent='در حال ذخیره تغییرات...';
  const previousImageUrl=heroSettings.imageUrl||'';
  let imageUrl=heroSettings.imageUrl||defaultHeroImage;
