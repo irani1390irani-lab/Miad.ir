@@ -1091,8 +1091,9 @@ function openArticleDetail(item,kind='message'){
    contentEl.textContent='';
    contentEl.style.display='none';
  }else{
-   if(summary && summary!==content){summaryEl.textContent=summary;summaryEl.style.display='block'}else{summaryEl.textContent='';summaryEl.style.display='none'}
-   contentEl.textContent=content||'متن این مطلب به‌زودی منتشر می‌شود.';
+   const cooperationLinkText=(value)=>esc(value||'').replace(/ثبت درخواست همکاری/g,'<a href="#" onclick="event.preventDefault();event.stopPropagation();switchPublicTab(\'apply\',null)" style="color:var(--accent-gold);font-weight:800;text-decoration:none;border-bottom:1px solid currentColor;cursor:pointer">ثبت درخواست همکاری</a>');
+   if(summary && summary!==content){summaryEl.innerHTML=cooperationLinkText(summary);summaryEl.style.display='block'}else{summaryEl.textContent='';summaryEl.style.display='none'}
+   contentEl.innerHTML=cooperationLinkText(content||'متن این مطلب به‌زودی منتشر می‌شود.');
    contentEl.style.display='block';
  }
  const mainWebsite=$('main-website');
@@ -1165,7 +1166,8 @@ function renderPublicNews(){
   const divider=index?'<div class="news-list-divider" aria-hidden="true"></div>':'';
   const dateLabel=item.date||faDate(item.published_at||item.created_at);
   homeBox.insertAdjacentHTML('beforeend',`${divider}<div class="message-card" role="button" tabindex="0" onclick='openArticleDetail(${payload},"news")' onkeydown='if(event.key==="Enter"||event.key===" "){event.preventDefault();openArticleDetail(${payload},"news")}' style="flex-direction:column;align-items:flex-start;cursor:pointer">${img}<div class="message-title">${esc(item.title)}</div><div class="news-card-date">${esc(dateLabel)}</div></div>`);
-  annBox.insertAdjacentHTML('beforeend',`${divider}<div class="message-card" role="button" tabindex="0" onclick='openArticleDetail(${payload},"news")' onkeydown='if(event.key==="Enter"||event.key===" "){event.preventDefault();openArticleDetail(${payload},"news")}' style="flex-direction:column;align-items:flex-start;gap:8px;cursor:pointer">${img}<div class="message-title" style="font-size:.95rem">${esc(item.title)}</div><div class="news-card-date">${esc(dateLabel)}</div><p style="font-size:.78rem;color:var(--text-secondary);line-height:1.8;white-space:pre-wrap">${esc(item.text||item.content||'')}</p></div>`);
+  const announcementText=esc(item.text||item.content||'').replace(/ثبت درخواست همکاری/g,'<a href="#" onclick="event.preventDefault();event.stopPropagation();switchPublicTab(\'apply\',null)" style="color:var(--accent-gold);font-weight:800;text-decoration:none;border-bottom:1px solid currentColor;cursor:pointer">ثبت درخواست همکاری</a>');
+  annBox.insertAdjacentHTML('beforeend',`${divider}<div class="message-card" role="button" tabindex="0" onclick='openArticleDetail(${payload},"news")' onkeydown='if(event.key==="Enter"||event.key===" "){event.preventDefault();openArticleDetail(${payload},"news")}' style="flex-direction:column;align-items:flex-start;gap:8px;cursor:pointer">${img}<div class="message-title" style="font-size:.95rem">${esc(item.title)}</div><div class="news-card-date">${esc(dateLabel)}</div><p style="font-size:.78rem;color:var(--text-secondary);line-height:1.8;white-space:pre-wrap">${announcementText}</p></div>`);
  });
 }
 function renderPublicMessages(){
