@@ -840,6 +840,122 @@ body { overflow-x:hidden; overflow-y:auto; }
 #section-messages .public-message-demo-tag{display:inline-flex;align-items:center;border-radius:20px;padding:3px 9px;font-size:.68rem;font-weight:700;color:#9b7a2d;background:rgba(198,184,135,.13);border:1px solid rgba(198,184,135,.38);white-space:nowrap}
 @media(prefers-reduced-motion:reduce){#section-messages .public-message-list-card{animation:none;opacity:1;transform:none;filter:none}}
 </style>
+
+<style id="article-detail-match-about-card">
+/* کادر جزئیات خبر و پیام دقیقاً از الگوی کارت صفحه «درباره ما» پیروی می‌کند */
+#section-detail .article-detail-page{max-width:930px!important;margin:0 auto!important;padding:18px 15px 34px!important;box-sizing:border-box!important;direction:rtl!important}
+#section-detail .article-detail-card{background:#fff!important;border:1px solid rgba(190,178,145,.22)!important;border-radius:24px!important;padding:24px 18px 30px!important;margin:10px auto 24px!important;max-width:900px!important;box-shadow:0 8px 28px rgba(0,0,0,.045)!important;overflow:visible!important;color:#222!important}
+#section-detail .article-detail-back{margin:0 0 12px!important;padding:8px 2px 12px!important}
+#section-detail .article-detail-title{background:#bca978!important;color:#111!important;border-radius:20px!important;min-height:190px!important;padding:28px 22px 48px!important;margin:0!important;display:flex!important;align-items:center!important;justify-content:center!important;text-align:center!important;font-size:clamp(1.45rem,5.2vw,2.35rem)!important;line-height:1.55!important;font-weight:900!important}
+#section-detail .article-detail-date{position:relative!important;z-index:2!important;width:max-content!important;max-width:90%!important;display:block!important;margin:-20px auto 28px!important;padding:10px 24px!important;border-radius:999px!important;background:#bca978!important;color:#fff!important;border:3px solid #fff!important;text-align:center!important;font-size:1rem!important;font-weight:700!important;line-height:1.6!important}
+#section-detail .article-detail-image{display:block!important;width:min(100%,420px)!important;max-height:260px!important;object-fit:cover!important;border-radius:20px!important;margin:0 auto 24px!important}
+#section-detail .article-detail-summary{margin:0 0 20px!important;padding:0 8px 20px!important;border-bottom:1px solid rgba(190,178,145,.25)!important;color:#929292!important;font-size:1.05rem!important;line-height:2.25!important;text-align:justify!important;white-space:pre-wrap!important}
+#section-detail .article-detail-content{color:#929292!important;font-size:1.05rem!important;line-height:2.25!important;text-align:justify!important;white-space:pre-wrap!important;overflow-wrap:anywhere!important;padding:0 8px!important}
+#section-detail .article-detail-content p{font-size:inherit!important;line-height:2.25!important;margin-bottom:20px!important;color:inherit!important}
+@media(max-width:480px){#section-detail .article-detail-page{padding:12px!important}#section-detail .article-detail-card{padding:18px 12px 24px!important;border-radius:22px!important}#section-detail .article-detail-title{min-height:190px!important;padding:24px 16px 44px!important;font-size:1.55rem!important}#section-detail .article-detail-date{padding:9px 20px!important;font-size:.9rem!important}#section-detail .article-detail-summary,#section-detail .article-detail-content{font-size:.95rem!important;line-height:2.2!important;text-align:right!important}}
+</style>
+
+
+
+<style id="detail-layout-exact-about-reference">
+/* جزئیات خبر و پیام: بازسازی ساختار واقعی کارت صفحه درباره ما */
+#section-detail .article-detail-page{
+  width:100%!important;max-width:1120px!important;margin:0 auto!important;
+  padding:18px 15px 34px!important;box-sizing:border-box!important;direction:rtl!important;
+}
+#section-detail .article-detail-back{
+  display:flex!important;width:max-content!important;margin:0 0 8px auto!important;
+  padding:7px 2px 10px!important;background:transparent!important;border:0!important;
+}
+#section-detail .article-detail-card{
+  width:100%!important;max-width:900px!important;box-sizing:border-box!important;
+  margin:10px auto 24px!important;padding:24px 18px 30px!important;
+  background:#fff!important;border:1px solid rgba(190,178,145,.22)!important;
+  border-radius:24px!important;box-shadow:0 8px 28px rgba(0,0,0,.045)!important;
+  overflow:visible!important;color:#222!important;
+}
+#section-detail .article-detail-title{
+  width:100%!important;min-height:190px!important;box-sizing:border-box!important;
+  margin:0!important;padding:28px 22px 48px!important;
+  display:flex!important;align-items:center!important;justify-content:center!important;
+  background:#bca978!important;color:#111!important;border-radius:20px!important;
+  text-align:center!important;font-size:clamp(1.45rem,5.2vw,2.35rem)!important;
+  line-height:1.55!important;font-weight:900!important;
+}
+#section-detail .article-detail-date{
+  position:relative!important;z-index:2!important;display:table!important;
+  width:max-content!important;max-width:90%!important;margin:-20px auto 34px!important;
+  padding:10px 24px!important;border:3px solid #fff!important;border-radius:999px!important;
+  background:#bca978!important;color:#fff!important;text-align:center!important;
+  font-size:1rem!important;font-weight:700!important;line-height:1.6!important;
+}
+#section-detail .article-detail-image{
+  display:block!important;width:min(100%,420px)!important;max-height:260px!important;
+  object-fit:cover!important;border-radius:20px!important;margin:0 auto 24px!important;
+}
+#section-detail .article-detail-summary{
+  margin:0 0 20px!important;padding:0 8px 20px!important;
+  border-bottom:1px solid rgba(190,178,145,.25)!important;
+  color:#929292!important;font-size:1.05rem!important;line-height:2.25!important;
+  text-align:justify!important;white-space:pre-wrap!important;
+}
+#section-detail .article-detail-content{
+  padding:0 8px!important;color:#929292!important;font-size:1.05rem!important;
+  line-height:2.25!important;text-align:justify!important;white-space:pre-wrap!important;
+  overflow-wrap:anywhere!important;
+}
+#section-detail .article-detail-content p{
+  margin:0 0 20px!important;color:inherit!important;font-size:inherit!important;line-height:2.25!important;
+}
+#section-detail .article-detail-content h2,
+#section-detail .article-detail-content h3{
+  color:var(--accent-gold)!important;font-size:1.12rem!important;
+  margin:26px 0 12px!important;font-weight:800!important;
+}
+@media(max-width:480px){
+  #section-detail .article-detail-page{padding:12px!important}
+  #section-detail .article-detail-card{padding:18px 12px 24px!important;border-radius:22px!important}
+  #section-detail .article-detail-title{min-height:190px!important;padding:24px 16px 44px!important;font-size:1.55rem!important;line-height:1.55!important}
+  #section-detail .article-detail-date{padding:9px 20px!important;font-size:.9rem!important;margin-bottom:34px!important}
+  #section-detail .article-detail-summary,#section-detail .article-detail-content{font-size:1rem!important;line-height:2.15!important;padding-inline:4px!important}
+  #section-detail .article-detail-content p{line-height:2.15!important}
+}
+</style>
+
+<style id="miad-detail-date-badge-exact-about-fix">
+/* رنگ، فرم و ابعاد تیتر و تاریخ مطابق دقیق کارت صفحه درباره ما */
+#section-detail .article-detail-heading{
+  position:relative!important;display:flex!important;align-items:center!important;justify-content:center!important;
+  width:100%!important;min-height:190px!important;margin:0!important;
+  padding:28px 22px 48px!important;box-sizing:border-box!important;
+  background:#bca978!important;border:0!important;border-radius:20px!important;
+  text-align:center!important;overflow:visible!important;
+}
+#section-detail .article-detail-heading .article-detail-title{
+  width:100%!important;min-height:0!important;margin:0!important;padding:0!important;
+  display:block!important;background:transparent!important;border:0!important;border-radius:0!important;
+  color:#111!important;text-align:center!important;font-family:inherit!important;
+  font-size:clamp(1.45rem,5.2vw,2.35rem)!important;font-weight:900!important;
+  line-height:1.55!important;overflow-wrap:anywhere!important;
+}
+#section-detail .article-detail-heading .article-detail-date{
+  position:absolute!important;left:50%!important;bottom:0!important;transform:translate(-50%,50%)!important;
+  z-index:3!important;display:block!important;width:max-content!important;min-width:0!important;
+  max-width:90%!important;margin:0!important;padding:10px 24px!important;
+  box-sizing:border-box!important;border:3px solid #fff!important;border-radius:999px!important;
+  background:#bca978!important;color:#fff!important;text-align:center!important;
+  font-size:1rem!important;font-weight:700!important;line-height:1.5!important;
+  white-space:normal!important;box-shadow:none!important;
+}
+#section-detail .article-detail-image{margin-top:58px!important}
+#section-detail .article-detail-date:not(:empty) + .article-detail-image{margin-top:58px!important}
+@media(max-width:480px){
+ #section-detail .article-detail-heading{min-height:190px!important;padding:24px 16px 44px!important;border-radius:20px!important}
+ #section-detail .article-detail-heading .article-detail-title{font-size:1.55rem!important;line-height:1.55!important}
+ #section-detail .article-detail-heading .article-detail-date{padding:10px 24px!important;font-size:1rem!important;border-width:3px!important}
+}
+</style>
+
 </head>
 <body>
 <div id="main-website">
@@ -930,10 +1046,12 @@ body { overflow-x:hidden; overflow-y:auto; }
 </div>
 <div id="section-detail" class="page-section" style="display:none;padding:0 0 20px">
   <main class="article-detail-page">
+    <button class="article-detail-back" type="button" onclick="closeArticleDetail()"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
     <article class="article-detail-card">
-      <button class="article-detail-back" type="button" onclick="closeArticleDetail()"><i class="fa-solid fa-arrow-right"></i> بازگشت</button>
-      <div class="article-detail-date" id="article-detail-date"></div>
-      <h1 class="article-detail-title" id="article-detail-title"></h1>
+      <div class="miad-article-heading article-detail-heading">
+        <h1 class="article-detail-title miad-article-title" id="article-detail-title"></h1>
+        <div class="article-detail-date miad-article-date" id="article-detail-date"></div>
+      </div>
       <img class="article-detail-image" id="article-detail-image" alt="" style="display:none">
       <div class="article-detail-summary" id="article-detail-summary" style="display:none"></div>
       <div class="article-detail-content" id="article-detail-content"></div>
@@ -1100,6 +1218,7 @@ async function loadPublicData(){
    sb.from('media').select('*').eq('is_visible',true).order('created_at',{ascending:false}),
    sb.from('members').select('*').eq('status','active').order('joined_at',{ascending:false})
   ]);
+  if(msgR.error)throw new Error('دریافت پیام‌ها از سرور انجام نشد: '+msgR.error.message);
   siteData.news=(newsR.data||[]).map(n=>({...n,text:n.content||n.summary||'',date:String(n.id)==='1'?'۱۴۰۴/۱۲/۱۸':faDate(n.published_at||n.created_at)}));
   siteData.messages=(msgR.data||[]).map(m=>({...m,title:m.name||m.message,date:faDate(m.created_at)}));
   siteData.media=(mediaR.data||[]).map(m=>({...m,url:m.file_url,desc:m.description||''}));
@@ -1218,8 +1337,8 @@ function renderPublicNews(){
  });
 }
 function isMiadDemoMessage(m){
- const text=[m?.title,m?.name,m?.message,m?.content,m?.description].filter(Boolean).join(' ').replace(/[ي]/g,'ی').replace(/[ك]/g,'ک').toLowerCase();
- return m?.is_demo===true || /آزمایش(?:ی)?|تست(?:ی)?|نمونه(?:\s|$)|دمو|demo|test\s*message|sample\s*message/.test(text);
+ // پیام‌ها بر اساس کلمات عنوان یا متن فیلتر نمی‌شوند؛ فقط رکوردهای صریحاً علامت‌گذاری‌شده مستثنا هستند.
+ return m?.is_demo===true;
 }
 function renderPublicMessages(){
  const box=$('public-messages-container');if(!box)return;box.innerHTML='';
@@ -1346,7 +1465,7 @@ async function checkLogin(){
 }
 async function logoutAdmin(){await sb.auth.signOut();currentAdmin=null;$('admin-panel-page').style.display='none';$('login-page').style.display='none'}
 async function loadAdminData(){
- if(!currentAdmin)return;
+ if(!currentAdmin)return false;
  try{
   const results=await Promise.allSettled([
    sb.from('requests').select('*').order('created_at',{ascending:false}),
@@ -1370,8 +1489,9 @@ async function loadAdminData(){
   renderPublicNews();renderPublicMessages();renderPublicGallery();updateAdminDashboard();renderReqsTable();renderMembersTable();renderNewsAdminTable();renderMsgsAdminTable();renderMediaAdminList();
   await loadHeroSettings(true);
   const failed=rows.map((x,i)=>x.error?labels[i]:null).filter(Boolean);
-  if(failed.length)notify('بخشی از اطلاعات پنل بارگذاری نشد: '+failed.join('، '));
- }catch(e){console.error('خطا در بارگذاری پنل:',e);notify('بارگذاری پنل با خطا مواجه شد: '+(e?.message||'خطای ارتباط با سرور'))}
+  if(failed.length){notify('بخشی از اطلاعات پنل بارگذاری نشد: '+failed.join('، '));return false;}
+  return true;
+ }catch(e){console.error('خطا در بارگذاری پنل:',e);notify('بارگذاری پنل با خطا مواجه شد: '+(e?.message||'خطای ارتباط با سرور'));return false}
 }
 function applyHeroSettings(){
  const img=$('hero-image'),preview=$('hero-settings-preview'),text=$('hero-cta')?.querySelector('.button-text'),cta=$('hero-cta');
@@ -1506,11 +1626,17 @@ async function saveNewMessage(){
  if(!name){notify('عنوان پیام را وارد کنید.');return}
  const publishedAt=dateInputToISO(dateValue);if(!publishedAt){$('msg-published-date-input').classList.add('is-invalid');notify('تاریخ شمسی را درست وارد کنید؛ نمونه: ۱۴۰۵/۰۸/۰۸');return}
  const payload={name,message:body||name,is_visible:visible,created_at:publishedAt};
- const {error}=id?await sb.from('messages').update(payload).eq('id',id):await sb.from('messages').insert(payload);
- if(error){notify('ذخیره پیام انجام نشد: '+(error.message||''));return}
- closeModal('add-msg-modal');$('msg-edit-id').value='';$('msg-title-input').value='';$('msg-body-input').value='';await loadAdminData();notify(id?'پیام ویرایش شد.':'پیام منتشر شد.');
+ try{
+  const result=id?await sb.from('messages').update(payload).eq('id',id):await sb.from('messages').insert(payload);
+  if(result.error)throw result.error;
+  const refreshed=await loadAdminData();
+  if(!refreshed){notify('ذخیره در سرور انجام شد، اما دریافت دوباره اطلاعات پنل ناموفق بود. دسترسی SELECT جدول messages در Supabase را بررسی کنید.');return}
+  const saved=(siteData.messages||[]).some(m=>id?String(m.id)===String(id):(String(m.name||'')===name&&String(m.message||'')===String(body||name)));
+  if(!saved){notify('ذخیره گزارش شد، اما پیام در فهرست سرور پیدا نشد. دسترسی‌های INSERT و SELECT جدول messages در Supabase را بررسی کنید.');return}
+  closeModal('add-msg-modal');$('msg-edit-id').value='';$('msg-title-input').value='';$('msg-body-input').value='';notify(id?'پیام ویرایش شد.':'پیام با موفقیت منتشر و در فهرست سرور تأیید شد.');
+ }catch(e){console.error('ذخیره پیام ناموفق بود:',e);notify('ذخیره پیام انجام نشد: '+(e?.message||'خطای نامشخص'))}
 }
-function editMsg(id){
+ function editMsg(id){
  const m=siteData.messages.find(x=>String(x.id)===String(id));if(!m)return;
  $('msg-edit-id').value=m.id;$('msg-title-input').value=m.name||m.title||'';$('msg-body-input').value=m.message||m.content||'';$('msg-published-date-input').value=dateInputValue(m.created_at);$('msg-published-date-input').classList.remove('is-invalid');$('msg-published-input').checked=m.is_visible!==false;
  $('msg-modal-heading').innerHTML='<i class="fa-solid fa-pen"></i> ویرایش پیام';$('msg-save-btn').innerHTML='<i class="fa-solid fa-floppy-disk"></i> ذخیره تغییرات';$('add-msg-modal').style.display='flex';
